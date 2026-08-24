@@ -8,15 +8,21 @@
 :root{--navy:#0b2148;--navy2:#102e5e;--blue:#2463c7;--red:#ed1c24;--bg:#f5f7fa;--card:#fff;--line:#dce3ec;--text:#17243d;--muted:#607089;--ok:#167346;--warn:#8a6410;--err:#a52727}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
 header{background:var(--navy);border-bottom:4px solid var(--red);color:#fff;padding:20px 28px}
-.header-inner{max-width:1250px;margin:auto;display:flex;align-items:center;gap:28px}
+.header-inner{max-width:1250px;margin:auto;display:flex;align-items:center;gap:28px;justify-content:space-between}
+.header-left{display:flex;align-items:center;gap:28px}
 .logo{width:150px;height:auto;display:block}
 .title h1{font-size:30px;letter-spacing:.4px;margin:0 0 7px}.title p{margin:0;color:#d9e4f3;font-size:15px}
+.livebadge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;white-space:nowrap}
+.livebadge .dot{width:9px;height:9px;border-radius:50%;background:#5b6c86}
+.livebadge.on .dot{background:#2fd06a;box-shadow:0 0 0 0 rgba(47,208,106,.6);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,208,106,.55)}70%{box-shadow:0 0 0 9px rgba(47,208,106,0)}100%{box-shadow:0 0 0 0 rgba(47,208,106,0)}}
 main{max-width:1250px;margin:22px auto;padding:0 16px}.layout{display:grid;grid-template-columns:340px 1fr;gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 14px rgba(10,30,60,.05);margin-bottom:18px}
 .card h2{font-size:19px;margin:0 0 16px;color:var(--navy)}
-button{width:100%;border:0;border-radius:9px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;margin:0 0 10px}
+button{width:100%;border:0;border-radius:9px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;margin:0 0 10px;transition:transform .05s ease}
+button:active{transform:scale(.98)}
 .primary{background:var(--navy);color:#fff}.primary:hover{background:var(--navy2)}.secondary{background:#eef2f7;color:var(--text)}.danger{background:#fff;color:var(--err);border:1px solid #efcaca}
-button:disabled{opacity:.48;cursor:not-allowed}
+button:disabled{opacity:.48;cursor:not-allowed;transform:none}
 .status{padding:12px;border:1px solid var(--line);border-radius:9px;background:#f7f9fc;color:var(--muted);font-size:14px;line-height:1.4}
 .status.ok{background:#edf8f1;color:var(--ok);border-color:#cbe9d5}.status.warn{background:#fff8e7;color:var(--warn);border-color:#eedba5}.status.error{background:#fff0f0;color:var(--err);border-color:#efcaca}
 label{font-size:14px;font-weight:700;display:block;margin-bottom:8px}.field{margin-bottom:16px}
@@ -30,18 +36,23 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
 .vlibras-mark{position:absolute;right:28px;top:28px;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:9px 12px;color:#fff;font-weight:700}
 .queue{margin-top:18px}.table{border:1px solid var(--line);border-radius:9px;overflow:hidden}
 .row{display:grid;grid-template-columns:65px 1fr 150px;gap:12px;padding:11px 13px;border-bottom:1px solid #edf1f5;font-size:13px;align-items:center}.row:last-child{border-bottom:0}.head{background:#f5f7fa;font-weight:700;color:var(--navy)}.badge{font-size:12px;font-weight:700}.badge.ok{color:var(--ok)}.badge.pending{color:var(--warn)}.badge.err{color:var(--err)}
+.row.current{background:#fff8e7}
 footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-size:13px;margin-top:20px}
+.retryBtn{width:auto;display:inline-block;margin:8px 0 0;padding:8px 14px;font-size:13px}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.header-inner{align-items:flex-start;flex-direction:column;gap:14px}.logo{width:125px}.title h1{font-size:24px}}
 </style>
 </head>
 <body>
 <header>
   <div class="header-inner">
-    <img class="logo" src="sesi-logo.png" alt="SESI">
-    <div class="title">
-      <h1>TRADUTOR AUTOMÁTICO PARA LIBRAS</h1>
-      <p>Fala em Português, transcrição automática e tradução para Libras.</p>
+    <div class="header-left">
+      <img class="logo" src="sesi-logo.png" alt="SESI" onerror="this.style.display='none'">
+      <div class="title">
+        <h1>TRADUTOR AUTOMÁTICO PARA LIBRAS</h1>
+        <p>Fala em Português, transcrição automática e tradução para Libras.</p>
+      </div>
     </div>
+    <div id="livebadge" class="livebadge"><span class="dot"></span><span id="livebadgeText">Parado</span></div>
   </div>
 </header>
 
@@ -79,8 +90,8 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 
     <section class="card">
       <h2>COMO FUNCIONA</h2>
-      <div class="info">O professor inicia a tradução uma vez. Depois, as frases reconhecidas são colocadas em uma fila e enviadas ao player do VLibras automaticamente, sem clicar em cada frase.</div>
-      <p class="small">Esta versão não usa OpenAI, Vercel, servidor próprio, cartão ou chave de API. O reconhecimento de voz depende dos recursos e das políticas do navegador.</p>
+      <div class="info">O professor inicia a tradução uma vez. As frases reconhecidas são colocadas em uma fila e enviadas ao player do VLibras automaticamente, uma de cada vez, sem clicar em cada frase.</div>
+      <p class="small">Esta versão não usa OpenAI, Vercel, servidor próprio, cartão ou chave de API. O reconhecimento de voz depende dos recursos e das políticas do navegador. A tradução em Libras depende do serviço público vlibras.gov.br — se ele estiver instável, a transcrição continua funcionando normalmente.</p>
     </section>
   </aside>
 
@@ -98,6 +109,7 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
       <div class="vlibras-mark">VLibras</div>
     </div>
     <div id="vlibrasStatus" class="status warn" style="margin-top:12px">Carregando o player do VLibras...</div>
+    <button id="retryVlibras" class="secondary retryBtn" style="display:none">TENTAR RECONECTAR AO VLIBRAS</button>
 
     <div class="queue">
       <h2>FILA DE TRADUÇÃO AUTOMÁTICA</h2>
@@ -120,48 +132,85 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>
 /*
-  V2 AUTOMÁTICA
-  - O VLibras é carregado pela integração oficial.
-  - Quando o player expõe window.plugin.player.translate(), usamos esse
-    método para enviar frases sem clique.
-  - Caso a versão do widget não exponha o método, a página informa isso
-    e mantém a transcrição funcionando.
+  V3 AUTOMÁTICA + RECONEXÃO
+  - O VLibras é carregado pela integração oficial (script + init).
+  - O player real (avatar 3D) só termina de carregar depois que o
+    botão de acesso é clicado, então clicamos nele por script assim
+    que a página carrega, para adiantar o download dos arquivos.
+  - Se o servidor do VLibras estiver instável (ex.: erro 503) e o
+    método translate() não aparecer dentro do tempo limite, mostramos
+    um aviso claro e um botão para tentar de novo, em vez de travar
+    silenciosamente. A fila e a transcrição continuam funcionando.
 */
 let vlibrasReady=false;
 let vlibrasTimer=null;
+let vlibrasAttempts=0;
+const VLIBRAS_MAX_ATTEMPTS=40;   // ~20s de tentativas por ciclo
+const VLIBRAS_POLL_MS=500;
+
+const vStatusEl=document.getElementById("vlibrasStatus");
+const retryBtn=document.getElementById("retryVlibras");
+
+function setVlibrasStatus(text,type){
+  vStatusEl.className="status "+type;
+  vStatusEl.textContent=text;
+}
 
 function detectVLibras(){
   try{
     if(window.plugin && window.plugin.player && typeof window.plugin.player.translate==="function"){
       vlibrasReady=true;
-      document.getElementById("vlibrasStatus").className="status ok";
-      document.getElementById("vlibrasStatus").textContent="VLibras pronto. As frases serão enviadas automaticamente.";
+      setVlibrasStatus("VLibras pronto. As frases serão enviadas automaticamente.","ok");
+      retryBtn.style.display="none";
       return true;
     }
   }catch(e){}
   return false;
 }
 
+function startVlibrasWatch(){
+  vlibrasAttempts=0;
+  retryBtn.style.display="none";
+  clearInterval(vlibrasTimer);
+  vlibrasTimer=setInterval(()=>{
+    vlibrasAttempts++;
+    if(detectVLibras() || vlibrasAttempts>=VLIBRAS_MAX_ATTEMPTS){
+      clearInterval(vlibrasTimer);
+      if(!vlibrasReady){
+        setVlibrasStatus("O servidor do VLibras não respondeu a tempo (isso costuma ser instabilidade temporária do serviço público, não um erro nesta página). A transcrição continua funcionando normalmente.","error");
+        retryBtn.style.display="inline-block";
+      }
+    }
+  },VLIBRAS_POLL_MS);
+}
+
+function tryOpenWidget(){
+  // Clica no botão de acesso do VLibras por código para adiantar o
+  // carregamento do player, sem exigir clique manual do professor.
+  try{
+    const btn=document.querySelector("[vw-access-button]");
+    if(btn) btn.click();
+  }catch(e){}
+}
+
 window.addEventListener("load",function(){
   try{
     new window.VLibras.Widget("https://vlibras.gov.br/app");
   }catch(e){
-    document.getElementById("vlibrasStatus").className="status error";
-    document.getElementById("vlibrasStatus").textContent="Não foi possível iniciar o VLibras. Verifique a conexão com a internet.";
+    setVlibrasStatus("Não foi possível iniciar o VLibras. Verifique a conexão com a internet.","error");
+    retryBtn.style.display="inline-block";
+    return;
   }
-  let attempts=0;
-  vlibrasTimer=setInterval(()=>{
-    attempts++;
-    if(detectVLibras() || attempts>=40){
-      clearInterval(vlibrasTimer);
-      if(!vlibrasReady){
-        const s=document.getElementById("vlibrasStatus");
-        s.className="status warn";
-        s.textContent="O VLibras foi carregado, mas esta versão do widget não expôs o método automático. A transcrição continua funcionando.";
-      }
-    }
-  },500);
+  setTimeout(tryOpenWidget,600);
+  startVlibrasWatch();
 });
+
+retryBtn.onclick=function(){
+  vlibrasReady=false;
+  setVlibrasStatus("Tentando reconectar ao VLibras...","warn");
+  tryOpenWidget();
+  startVlibrasWatch();
+};
 </script>
 
 <script>
@@ -171,10 +220,16 @@ const testBtn=document.getElementById("testBtn"), statusEl=document.getElementBy
 const support=document.getElementById("support"), transcript=document.getElementById("transcript");
 const queueEl=document.getElementById("queue"), empty=document.getElementById("empty");
 const auto=document.getElementById("auto"), pauseSelect=document.getElementById("pause");
+const liveBadge=document.getElementById("livebadge"), liveBadgeText=document.getElementById("livebadgeText");
 
 let recognition=null, running=false, finalBuffer="", sentenceTimer=null, order=0;
 const queue=[];
+let sending=false; // garante que as frases são enviadas ao VLibras uma de cada vez, na ordem
 
+function setLive(on,label){
+  liveBadge.classList.toggle("on",on);
+  liveBadgeText.textContent=label;
+}
 function status(text,type="warn"){
   statusEl.className="status "+type;
   statusEl.textContent=text;
@@ -188,33 +243,59 @@ function addQueue(text,state="Aguardando player"){
   const b=document.createElement("div"); b.textContent=text;
   const c=document.createElement("div"); c.className="badge pending"; c.textContent=state;
   row.append(a,b,c); queueEl.appendChild(row);
-  queue.push({text,row,status:c});
-  return queue[queue.length-1];
+  const item={text,row,status:c,sentFlag:false};
+  queue.push(item);
+  return item;
 }
 function setQueueState(item,text,cls){
   item.status.textContent=text;
   item.status.className="badge "+cls;
 }
-async function sendToVLibras(item){
-  if(!auto.checked){setQueueState(item,"Apenas transcrito","ok");return;}
-  if(!detectVLibras()){setQueueState(item,"VLibras não pronto","err");return;}
-  try{
-    // Método utilizado pelo player do VLibras para receber texto.
-    window.plugin.player.translate(item.text);
-    setQueueState(item,"Enviado ao VLibras","ok");
-  }catch(e){
-    console.error(e);
-    setQueueState(item,"Falha ao enviar","err");
+
+// Processa a fila em ordem, uma frase por vez, esperando o VLibras
+// terminar de "falar" a frase anterior antes de mandar a próxima.
+async function processQueue(){
+  if(sending) return;
+  sending=true;
+  for(const item of queue){
+    if(item.sentFlag) continue;
+    item.sentFlag=true;
+    item.row.classList.add("current");
+    await sendToVLibras(item);
+    item.row.classList.remove("current");
   }
+  sending=false;
 }
+
+function sendToVLibras(item){
+  return new Promise((resolve)=>{
+    if(!auto.checked){ setQueueState(item,"Apenas transcrito","ok"); resolve(); return; }
+    if(!detectVLibras()){ setQueueState(item,"VLibras não pronto","err"); resolve(); return; }
+    try{
+      // Método utilizado pelo player do VLibras para receber texto.
+      window.plugin.player.translate(item.text);
+      setQueueState(item,"Enviado ao VLibras","ok");
+      // Pequeno intervalo para não atropelar frase sobre frase, já que
+      // o player não avisa quando termina a animação da frase anterior.
+      const words=item.text.split(/\s+/).filter(Boolean).length;
+      const waitMs=Math.min(6000,Math.max(1500,words*350));
+      setTimeout(resolve,waitMs);
+    }catch(e){
+      console.error(e);
+      setQueueState(item,"Falha ao enviar","err");
+      resolve();
+    }
+  });
+}
+
 function flushSentence(){
   clearTimeout(sentenceTimer);
   const text=finalBuffer.replace(/\s+/g," ").trim();
   finalBuffer="";
   if(!text)return;
   transcript.value=(transcript.value+" "+text).replace(/\s+/g," ").trim();
-  const item=addQueue(text,"Preparando tradução");
-  sendToVLibras(item);
+  addQueue(text,"Na fila");
+  processQueue();
 }
 function scheduleSentence(){
   clearTimeout(sentenceTimer);
@@ -223,7 +304,7 @@ function scheduleSentence(){
 
 if(!Recognition){
   support.className="status error";
-  support.textContent="Este navegador não disponibiliza reconhecimento de voz. A digitação e o VLibras continuam disponíveis.";
+  support.textContent="Este navegador não disponibiliza reconhecimento de voz. Tente no Google Chrome ou Microsoft Edge.";
   startBtn.disabled=true;
 }else{
   support.className="status ok";
@@ -240,6 +321,7 @@ function buildRecognition(){
   r.onstart=()=>{
     startBtn.disabled=true;stopBtn.disabled=false;
     status("Microfone ativo. O professor pode falar continuamente.","ok");
+    setLive(true,"No ar");
   };
   r.onresult=(event)=>{
     let interim="";
@@ -274,6 +356,7 @@ function buildRecognition(){
     }else{
       startBtn.disabled=false;stopBtn.disabled=true;
       status("Microfone parado.","warn");
+      setLive(false,"Parado");
     }
   };
   return r;
