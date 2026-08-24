@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0d1730">
-  <title>Tradutor de Sala para LIBRAS • SESI</title>
+  <title>Tradutor de Sala para LIBRAS • V3</title>
 
   <style>
     :root{
@@ -24,7 +24,6 @@
     }
 
     *{box-sizing:border-box}
-
     html{background:var(--bg);min-height:100%}
 
     body{
@@ -32,269 +31,146 @@
       min-height:100vh;
       color:var(--ink);
       font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at 0 0,#fff 0,transparent 25rem),
-        var(--bg);
+      background:radial-gradient(circle at 0 0,#fff 0,transparent 25rem),var(--bg);
     }
 
     button,input,select,textarea{font:inherit}
     button{cursor:pointer}
 
-    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
-      outline:4px solid rgba(49,93,212,.20);
-      outline-offset:3px;
-    }
-
     .topbar{
       max-width:1500px;
       margin:auto;
-      padding:30px 28px 20px;
+      padding:28px 28px 18px;
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:20px;
     }
 
-    .brand{
-      display:flex;
-      align-items:flex-start;
-      gap:15px;
-    }
-
+    .brand{display:flex;gap:15px;align-items:flex-start}
     .brand-icon{
-      width:58px;
-      height:58px;
-      display:grid;
-      place-items:center;
-      border-radius:17px;
-      background:var(--navy);
-      font-size:28px;
-      box-shadow:var(--shadow);
+      width:58px;height:58px;display:grid;place-items:center;
+      border-radius:17px;background:var(--navy);font-size:28px;box-shadow:var(--shadow)
     }
 
     .eyebrow{
-      margin:0 0 5px;
-      color:var(--blue);
-      font-size:.71rem;
-      font-weight:900;
-      letter-spacing:.13em;
+      margin:0 0 5px;color:var(--blue);font-size:.71rem;
+      font-weight:900;letter-spacing:.13em
     }
 
     h1,h2,p{margin-top:0}
-    h1{margin-bottom:8px;font-size:clamp(1.9rem,4vw,3.2rem);line-height:.98;letter-spacing:-.045em}
+    h1{margin-bottom:8px;font-size:clamp(1.9rem,4vw,3.1rem);line-height:.98;letter-spacing:-.045em}
     h2{margin-bottom:0;font-size:1.08rem}
-    .subtitle{margin:0;color:var(--muted);font-size:.98rem}
+    .subtitle{margin:0;color:var(--muted)}
 
-    .compat-pill{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      background:#fff;
-      border:1px solid var(--line);
-      color:var(--muted);
-      font-size:.8rem;
-      box-shadow:var(--shadow);
-      white-space:nowrap;
+    .pill{
+      display:flex;align-items:center;gap:8px;padding:9px 12px;
+      border-radius:999px;background:#fff;border:1px solid var(--line);
+      color:var(--muted);font-size:.8rem;box-shadow:var(--shadow);white-space:nowrap
     }
 
-    .compat-pill span{
-      width:9px;height:9px;border-radius:50%;background:#9ca8b9
-    }
-
-    .compat-pill.ok span{background:var(--green)}
-    .compat-pill.warn span{background:var(--amber)}
-    .compat-pill.bad span{background:var(--red)}
+    .pill i{width:9px;height:9px;border-radius:50%;background:#9ca8b9}
+    .pill.ok i{background:var(--green)}
+    .pill.warn i{background:var(--amber)}
+    .pill.bad i{background:var(--red)}
 
     .page{
-      max-width:1500px;
-      margin:auto;
-      padding:8px 28px 55px;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
+      max-width:1500px;margin:auto;padding:8px 28px 55px;
+      display:flex;flex-direction:column;gap:20px
     }
 
     .panel{
-      background:var(--paper);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:22px;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:22px
     }
 
-    .hero-grid{
-      display:grid;
-      grid-template-columns:380px minmax(0,1fr);
-      gap:20px;
-    }
+    .hero-grid{display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px}
 
-    .section-title{
-      display:flex;
-      align-items:center;
-      gap:11px;
-      margin-bottom:18px;
-    }
-
+    .section-title{display:flex;align-items:center;gap:11px;margin-bottom:18px}
     .number{
-      width:36px;
-      height:36px;
-      border-radius:11px;
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-      background:var(--blue2);
-      color:var(--blue);
-      font-weight:900;
-      font-size:.76rem;
+      width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+      flex:0 0 auto;background:var(--blue2);color:var(--blue);font-weight:900;font-size:.76rem
     }
 
     .mic-state{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      background:#f6f8fc;
-      border-radius:16px;
-      padding:13px;
-      margin-bottom:17px;
+      display:flex;align-items:center;gap:14px;background:#f6f8fc;
+      border-radius:16px;padding:13px;margin-bottom:14px
     }
 
     .mic-state p{margin:3px 0 0;color:var(--muted);font-size:.83rem}
 
     .mic-orb{
-      width:56px;
-      height:56px;
-      flex:0 0 auto;
-      display:grid;
-      place-items:center;
-      background:#e2e7ef;
-      border-radius:50%;
-      font-size:24px;
+      width:58px;height:58px;display:grid;place-items:center;flex:0 0 auto;
+      border-radius:50%;background:#e2e7ef;font-size:25px
     }
 
-    .mic-orb.live{
-      background:#ffe8ea;
-      animation:micpulse 1.15s infinite;
+    .mic-orb.live{background:#ffe8ea;animation:micpulse 1.1s infinite}
+    @keyframes micpulse{50%{box-shadow:0 0 0 10px rgba(199,68,81,.09)}}
+
+    .meter{height:7px;background:#e5eaf1;border-radius:999px;overflow:hidden;margin:10px 0 15px}
+    .meter span{display:block;height:100%;width:0;background:var(--green);transition:width .08s}
+
+    .label{display:block;margin:10px 0 6px;color:var(--muted);font-size:.78rem;font-weight:800}
+    .text-input,select,textarea{
+      width:100%;border:1px solid var(--line);border-radius:10px;
+      background:#f8fafc;color:var(--ink);padding:10px
     }
 
-    @keyframes micpulse{
-      50%{box-shadow:0 0 0 10px rgba(199,68,81,.09)}
-    }
-
-    .buttons{display:flex;gap:9px;margin-top:15px}
+    .inline{display:flex;gap:8px}
+    .inline .text-input{min-width:0}
 
     .btn{
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--ink);
-      border-radius:12px;
-      padding:11px 15px;
-      font-weight:900;
+      border:1px solid var(--line);background:#fff;color:var(--ink);
+      border-radius:12px;padding:11px 15px;font-weight:900
     }
 
     .btn:hover:not(:disabled){background:#f5f7fb}
     .btn:disabled{opacity:.45;cursor:not-allowed}
     .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-    .btn.primary:hover:not(:disabled){background:#244cb7}
     .btn.compact{padding:8px 11px;font-size:.8rem}
     .btn.danger{color:var(--red)}
-    .btn.full{width:100%;margin-top:10px}
+    .btn.full{width:100%}
 
-    .settings-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:14px;
+    .buttons{display:flex;gap:9px;margin-top:14px}
+
+    .status-box{
+      margin-top:13px;padding:11px 12px;border-radius:12px;
+      background:#f6f8fc;color:var(--muted);font-size:.79rem;line-height:1.45
     }
 
-    .settings-grid label{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      color:var(--muted);
-      font-size:.76rem;
-      font-weight:800;
-    }
+    .status-box.error{background:#fff0f1;color:#91303b}
+    .status-box.success{background:#eaf6ef;color:#17633f}
 
-    select,textarea{
-      border:1px solid var(--line);
-      border-radius:10px;
-      background:#f8fafc;
-      color:var(--ink);
-      padding:9px;
-    }
-
-    .privacy-note{
-      margin-top:16px;
-      padding:12px;
-      background:#fff7e8;
-      border:1px solid #f0dfb6;
-      border-radius:13px;
-      color:#755510;
-      font-size:.78rem;
-      line-height:1.5;
-    }
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+    .settings-grid label{color:var(--muted);font-size:.76rem;font-weight:800}
+    .settings-grid select{margin-top:6px}
 
     .status-badge{
-      margin-left:auto;
-      padding:6px 9px;
-      border-radius:999px;
-      background:#f0f3f7;
-      color:var(--muted);
-      font-size:.72rem;
-      font-weight:900;
+      margin-left:auto;padding:6px 9px;border-radius:999px;
+      background:#f0f3f7;color:var(--muted);font-size:.72rem;font-weight:900
     }
-
     .status-badge.ready{background:#eaf6ef;color:var(--green)}
     .status-badge.busy{background:#fff3df;color:var(--amber)}
     .status-badge.error{background:#fff0f1;color:var(--red)}
 
     .avatar-stage{
-      min-height:310px;
-      border-radius:20px;
-      background:
-        radial-gradient(circle at center,#26375e 0,#111b33 55%,#0a1223 100%);
-      position:relative;
-      display:grid;
-      place-items:center;
-      overflow:hidden;
+      min-height:310px;border-radius:20px;
+      background:radial-gradient(circle at center,#26375e 0,#111b33 55%,#0a1223 100%);
+      position:relative;display:grid;place-items:center;overflow:hidden
     }
 
     .avatar-instruction{
-      max-width:430px;
-      padding:18px;
-      text-align:center;
-      color:#aab6cc;
-      line-height:1.5;
+      max-width:480px;padding:18px;text-align:center;color:#aab6cc;line-height:1.5
     }
 
     .queue-visual{
-      position:absolute;
-      top:16px;
-      right:16px;
-      padding:9px 11px;
-      border-radius:12px;
-      background:rgba(255,255,255,.09);
-      color:#d9e1ef;
-      backdrop-filter:blur(6px);
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size:.7rem;
-      font-weight:900;
-      letter-spacing:.1em;
+      position:absolute;top:16px;right:16px;padding:9px 11px;border-radius:12px;
+      background:rgba(255,255,255,.09);color:#d9e1ef;
+      display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:900;letter-spacing:.1em
     }
-
     .queue-visual strong{font-size:1rem;color:white}
 
-    .now-translating{
-      margin-top:13px;
-      background:#f6f8fc;
-      border-radius:14px;
-      padding:13px;
-    }
-
+    .now-translating{margin-top:13px;background:#f6f8fc;border-radius:14px;padding:13px}
     .now-translating p:last-child{margin:0;line-height:1.4;font-weight:700}
 
     .live-panel{background:var(--navy);color:#fff}
@@ -305,91 +181,52 @@
     .live-panel .btn{border-color:#34425d;background:#17233c;color:#fff}
 
     .caption{
-      min-height:250px;
-      max-height:450px;
-      overflow:auto;
-      display:flex;
-      align-items:center;
-      padding:12px 8px 22px;
-      font-size:52px;
-      line-height:1.18;
-      font-weight:800;
-      letter-spacing:-.035em;
-      overflow-wrap:anywhere;
+      min-height:250px;max-height:450px;overflow:auto;display:flex;align-items:center;
+      padding:12px 8px 22px;font-size:52px;line-height:1.18;font-weight:800;
+      letter-spacing:-.035em;overflow-wrap:anywhere
     }
 
     .placeholder{color:#59677f;font-weight:600}
     .final-text{color:#fff}
-    .interim-text{color:#8794aa}
+    .working-text{color:#8794aa}
 
     .caption-footer{
-      padding-top:12px;
-      border-top:1px solid #283650;
-      color:#8998ae;
-      font-size:.78rem;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
+      padding-top:12px;border-top:1px solid #283650;color:#8998ae;font-size:.78rem;
+      display:flex;justify-content:space-between;gap:10px
     }
 
-    .two-columns{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:20px;
-    }
-
-    .helper{color:var(--muted);font-size:.84rem;margin-bottom:9px}
-    textarea{width:100%;resize:vertical;line-height:1.4}
-
+    .two-columns{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
     .queue-list,.history-list{margin:0;padding-left:27px}
-    .queue-list li,.history-list li{
-      padding:10px 8px;
-      border-bottom:1px solid var(--line);
-      line-height:1.42;
-    }
-
+    .queue-list li,.history-list li{padding:10px 8px;border-bottom:1px solid var(--line);line-height:1.42}
     .queue-list li:last-child,.history-list li:last-child{border-bottom:none}
     .empty{color:var(--muted);font-style:italic}
-    .time{
-      display:inline-block;
-      min-width:70px;
-      color:var(--muted);
-      font-size:.72rem;
-      font-weight:900;
-    }
+    .time{display:inline-block;min-width:70px;color:var(--muted);font-size:.72rem;font-weight:900}
+
+    .helper{color:var(--muted);font-size:.84rem}
+    textarea{resize:vertical;line-height:1.4}
 
     .live-panel:fullscreen{
-      border-radius:0;
-      min-height:100vh;
-      padding:4vw;
-      display:flex;
-      flex-direction:column;
+      border-radius:0;min-height:100vh;padding:4vw;display:flex;flex-direction:column
     }
-
     .live-panel:fullscreen .section-title{opacity:.35}
-
     .live-panel:fullscreen .caption{
-      flex:1;
-      justify-content:center;
-      text-align:center;
-      font-size:clamp(58px,7vw,112px)!important;
+      flex:1;justify-content:center;text-align:center;
+      font-size:clamp(58px,7vw,112px)!important
     }
 
     div[vw]{z-index:999999!important}
 
     @media(max-width:1000px){
-      .hero-grid{grid-template-columns:1fr}
-      .two-columns{grid-template-columns:1fr}
+      .hero-grid,.two-columns{grid-template-columns:1fr}
     }
 
     @media(max-width:650px){
       .topbar{padding:20px 15px 12px;flex-direction:column}
       .page{padding:8px 15px 35px}
-      .brand-icon{width:48px;height:48px}
       .settings-grid{grid-template-columns:1fr}
       .right-tools{flex-wrap:wrap}
       .caption{font-size:39px;min-height:220px}
-      .buttons{flex-direction:column}
+      .buttons,.inline{flex-direction:column}
     }
   </style>
 </head>
@@ -399,70 +236,82 @@
     <div class="brand">
       <div class="brand-icon">🤟</div>
       <div>
-        <p class="eyebrow">PSC • PROGRAMAÇÃO + ACESSIBILIDADE</p>
+        <p class="eyebrow">PSC • V3 AUTOMÁTICA</p>
         <h1>Tradutor de Sala para LIBRAS</h1>
-        <p class="subtitle">Versão SESI • sem instalação • abra pelo index.html</p>
+        <p class="subtitle">Microfone direto → transcrição por API → fila → VLibras.</p>
       </div>
     </div>
 
-    <div class="compat-pill" id="compatPill">
-      <span></span>
-      verificando navegador…
+    <div class="pill" id="systemPill">
+      <i></i>
+      <span>aguardando configuração</span>
     </div>
   </header>
 
   <main class="page">
-
     <section class="hero-grid">
-
       <div class="panel">
         <div class="section-title">
           <span class="number">01</span>
           <div>
             <p class="eyebrow">PROFESSOR</p>
-            <h2>Microfone</h2>
+            <h2>Microfone e transcrição</h2>
           </div>
         </div>
 
         <div class="mic-state">
-          <div class="mic-orb" id="micOrb">
-            <span>🎤</span>
-          </div>
-
+          <div class="mic-orb" id="micOrb">🎤</div>
           <div>
             <strong id="micStatus">Microfone parado</strong>
-            <p id="micDetail">Clique em “Iniciar tradução”.</p>
+            <p id="micDetail">Configure o backend e clique em iniciar.</p>
           </div>
         </div>
 
-        <div class="buttons">
-          <button class="btn primary" id="startButton">● Iniciar tradução</button>
-          <button class="btn" id="stopButton" disabled>Parar</button>
+        <div class="meter"><span id="volumeBar"></span></div>
+
+        <label class="label" for="backendUrl">Endereço do backend Vercel</label>
+        <div class="inline">
+          <input
+            class="text-input"
+            id="backendUrl"
+            type="url"
+            placeholder="https://SEU-PROJETO.vercel.app"
+            autocomplete="off"
+          >
+          <button class="btn" id="testBackendButton">Testar</button>
+        </div>
+
+        <div class="status-box" id="backendStatus">
+          Cole aqui o endereço que o Vercel gerar. Ele ficará salvo somente neste navegador.
         </div>
 
         <div class="settings-grid">
           <label>
-            Pausa para fechar frase
-            <select id="pauseSelect">
-              <option value="500">0,5 s</option>
-              <option value="800" selected>0,8 s</option>
-              <option value="1200">1,2 s</option>
-              <option value="1600">1,6 s</option>
+            Tamanho do bloco de áudio
+            <select id="chunkDuration">
+              <option value="2500">2,5 s</option>
+              <option value="3500" selected>3,5 s</option>
+              <option value="5000">5 s</option>
             </select>
           </label>
 
           <label>
-            Idioma
-            <select id="languageSelect">
-              <option value="pt-BR" selected>Português (Brasil)</option>
+            Sensibilidade à voz
+            <select id="voiceThreshold">
+              <option value="0.008">Alta</option>
+              <option value="0.015" selected>Normal</option>
+              <option value="0.025">Baixa</option>
             </select>
           </label>
         </div>
 
-        <div class="privacy-note">
-          <strong>Importante:</strong> esta versão depende do suporte do navegador ao reconhecimento de voz e de acesso à internet para carregar o VLibras.
-          <br><br>
-          <strong>Diagnóstico:</strong> depois de clicar em iniciar, observe a mensagem logo ao lado do ícone do microfone. Ela agora mostrará se houve bloqueio, falta de microfone, ausência de fala ou erro de rede.
+        <div class="buttons">
+          <button class="btn primary" id="startButton">● Iniciar tradução automática</button>
+          <button class="btn" id="stopButton" disabled>Parar</button>
+        </div>
+
+        <div class="status-box">
+          Esta versão não usa <code>SpeechRecognition</code>. O áudio é capturado diretamente pelo navegador com <code>MediaRecorder</code>.
         </div>
       </div>
 
@@ -471,16 +320,15 @@
         <div class="section-title">
           <span class="number">02</span>
           <div>
-            <p class="eyebrow">SAÍDA EM LIBRAS</p>
+            <p class="eyebrow">LIBRAS</p>
             <h2>Avatar VLibras</h2>
           </div>
-
           <span class="status-badge" id="avatarStatus">carregando</span>
         </div>
 
         <div class="avatar-stage">
           <div class="avatar-instruction" id="avatarInstruction">
-            O sistema tentará abrir o VLibras automaticamente ao iniciar.
+            O VLibras será preparado em paralelo. A legenda funciona mesmo que o avatar demore para carregar.
           </div>
 
           <div class="queue-visual">
@@ -491,10 +339,9 @@
 
         <div class="now-translating">
           <p class="eyebrow">TRADUZINDO AGORA</p>
-          <p id="nowTranslating">Aguardando o professor falar…</p>
+          <p id="nowTranslating">Aguardando fala…</p>
         </div>
       </div>
-
     </section>
 
 
@@ -512,24 +359,22 @@
             <input type="range" id="fontSize" min="30" max="82" value="52">
             A+
           </label>
-
           <button class="btn compact" id="fullscreenButton">⛶ Projetar</button>
         </div>
       </div>
 
       <div class="caption" id="caption" aria-live="polite">
-        <span class="placeholder">A fala do professor aparecerá aqui…</span>
+        <span class="placeholder">A transcrição aparecerá aqui…</span>
       </div>
 
       <div class="caption-footer">
         <span id="wordCount">0 palavras</span>
-        <span>Reconhecimento do navegador</span>
+        <span id="apiState">API: aguardando</span>
       </div>
     </section>
 
 
     <section class="two-columns">
-
       <div class="panel">
         <div class="section-title">
           <span class="number">04</span>
@@ -544,31 +389,20 @@
         </ol>
       </div>
 
-
       <div class="panel">
         <div class="section-title">
           <span class="number">05</span>
           <div>
             <p class="eyebrow">TESTE</p>
-            <h2>Enviar frase manualmente</h2>
+            <h2>Texto manual</h2>
           </div>
         </div>
 
-        <p class="helper">
-          Use este campo para testar o VLibras mesmo sem ligar o microfone.
-        </p>
+        <p class="helper">Permite testar apenas a integração com o VLibras.</p>
 
-        <textarea
-          id="manualText"
-          rows="4"
-          placeholder="Ex.: Bom dia, hoje vamos trabalhar em grupos."
-        ></textarea>
-
-        <button class="btn primary full" id="manualTranslateButton">
-          Enviar ao avatar
-        </button>
+        <textarea id="manualText" rows="4" placeholder="Bom dia, turma."></textarea>
+        <button class="btn primary full" id="manualTranslateButton">Enviar ao avatar</button>
       </div>
-
     </section>
 
 
@@ -587,14 +421,12 @@
       </div>
 
       <ol id="historyList" class="history-list">
-        <li class="empty">Nenhuma frase finalizada.</li>
+        <li class="empty">Nenhuma transcrição ainda.</li>
       </ol>
     </section>
-
   </main>
 
 
-  <!-- VLibras oficial -->
   <div vw class="enabled">
     <div vw-access-button class="active"></div>
     <div vw-plugin-wrapper>
@@ -614,426 +446,452 @@
 
 
   <script>
-    const $ = selector => document.querySelector(selector);
+    const $ = s => document.querySelector(s);
 
     const ui = {
-      compatPill: $("#compatPill"),
+      systemPill: $("#systemPill"),
+      backendUrl: $("#backendUrl"),
+      testBackendButton: $("#testBackendButton"),
+      backendStatus: $("#backendStatus"),
+
       micOrb: $("#micOrb"),
       micStatus: $("#micStatus"),
       micDetail: $("#micDetail"),
+      volumeBar: $("#volumeBar"),
+      chunkDuration: $("#chunkDuration"),
+      voiceThreshold: $("#voiceThreshold"),
       startButton: $("#startButton"),
       stopButton: $("#stopButton"),
-      pauseSelect: $("#pauseSelect"),
-      languageSelect: $("#languageSelect"),
+
       avatarStatus: $("#avatarStatus"),
       avatarInstruction: $("#avatarInstruction"),
       queueCount: $("#queueCount"),
       nowTranslating: $("#nowTranslating"),
+
       caption: $("#caption"),
       fontSize: $("#fontSize"),
       fullscreenButton: $("#fullscreenButton"),
       wordCount: $("#wordCount"),
+      apiState: $("#apiState"),
+
       queueList: $("#queueList"),
       manualText: $("#manualText"),
       manualTranslateButton: $("#manualTranslateButton"),
+
       historyList: $("#historyList"),
       downloadButton: $("#downloadButton"),
       clearButton: $("#clearButton")
     };
 
     const state = {
-      recognition: null,
-      recognitionRestart: false,
       running: false,
+      stream: null,
+      recorder: null,
+      recorderTimer: null,
 
-      finalTranscript: "",
-      speechBuffer: "",
-      lastInterim: "",
-      segmentTimer: null,
+      audioContext: null,
+      analyser: null,
+      analyserFrame: null,
+      recentVoiceDetected: false,
 
-      queue: [],
+      requestQueue: [],
+      sendingAudio: false,
+
+      finalText: "",
+      workingText: "",
       history: [],
 
+      librasQueue: [],
       translating: false,
       currentTranslation: "",
       vlibrasReady: false,
       playerEventsBound: false
     };
 
-    function cleanSentence(text) {
-      return String(text || "")
-        .replace(/\s+/g, " ")
-        .trim();
+    function cleanText(value) {
+      return String(value || "").replace(/\s+/g, " ").trim();
     }
 
-    function currentPauseMs() {
-      return Number(ui.pauseSelect.value || 800);
+    function backendBase() {
+      return ui.backendUrl.value.trim().replace(/\/+$/, "");
+    }
+
+    function setBackendMessage(type, message) {
+      ui.backendStatus.className =
+        "status-box " + (type || "");
+      ui.backendStatus.textContent = message;
+    }
+
+    function setSystem(type, text) {
+      ui.systemPill.className = "pill " + (type || "");
+      ui.systemPill.querySelector("span").textContent = text;
+    }
+
+    function setAvatarStatus(type, text) {
+      ui.avatarStatus.className =
+        "status-badge " + (type || "");
+      ui.avatarStatus.textContent = text;
     }
 
     function setMic(active, title, detail) {
       ui.micOrb.classList.toggle("live", active);
       ui.micStatus.textContent = title;
-      ui.micDetail.textContent = detail || "";
+      ui.micDetail.textContent = detail;
       ui.startButton.disabled = active;
       ui.stopButton.disabled = !active;
     }
 
-    function setAvatarStatus(kind, text) {
-      ui.avatarStatus.className =
-        "status-badge " + (kind || "");
-      ui.avatarStatus.textContent = text;
-    }
-
-    function checkCompatibility() {
-      const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        ui.compatPill.className = "compat-pill bad";
-        ui.compatPill.lastChild.textContent =
-          " reconhecimento de voz indisponível";
-        return false;
-      }
-
-      if (location.protocol === "file:") {
-        ui.compatPill.className = "compat-pill warn";
-        ui.compatPill.lastChild.textContent =
-          " voz disponível • arquivo local";
-      } else {
-        ui.compatPill.className = "compat-pill ok";
-        ui.compatPill.lastChild.textContent =
-          " navegador compatível";
-      }
-
-      return true;
-    }
-
-    function waitFor(condition, timeoutMs = 15000, intervalMs = 100) {
-      const start = Date.now();
-
+    function toBase64(blob) {
       return new Promise((resolve, reject) => {
-        const tick = () => {
-          try {
-            const result = condition();
+        const reader = new FileReader();
 
-            if (result) {
-              resolve(result);
-              return;
-            }
-          } catch {}
+        reader.onload = () => {
+          const dataUrl = String(reader.result || "");
+          const comma = dataUrl.indexOf(",");
 
-          if (Date.now() - start > timeoutMs) {
-            reject(new Error("Tempo limite excedido."));
+          if (comma < 0) {
+            reject(new Error("Áudio inválido."));
             return;
           }
 
-          setTimeout(tick, intervalMs);
+          resolve(dataUrl.slice(comma + 1));
         };
 
-        tick();
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
       });
     }
 
-    async function openVLibrasAutomatically() {
-      if (state.vlibrasReady) {
-        return true;
+    async function testBackend() {
+      const base = backendBase();
+
+      if (!base) {
+        setBackendMessage("error", "Cole primeiro o endereço do Vercel.");
+        return false;
       }
 
-      setAvatarStatus("busy", "inicializando");
+      localStorage.setItem("tradutor-backend-url", base);
+      setBackendMessage("", "Testando conexão…");
 
       try {
-        const accessContainer = await waitFor(() => {
-          const node =
-            document.querySelector("[vw-access-button]");
-          const clickable =
-            node?.querySelector(".access-button");
+        const response = await fetch(base + "/api/health");
+        const data = await response.json();
 
-          return clickable ? node : null;
-        }, 18000);
-
-        if (!window.plugin) {
-          accessContainer.click();
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "Backend respondeu com erro.");
         }
 
-        await waitFor(
-          () =>
-            window.plugin &&
-            window.plugin.player &&
-            typeof window.plugin.player.translate === "function",
-          20000
+        setBackendMessage(
+          "success",
+          data.openaiConfigured
+            ? "Backend conectado e chave da OpenAI configurada."
+            : "Backend conectado, mas OPENAI_API_KEY ainda não está configurada no Vercel."
         );
 
-        bindVLibrasEvents();
+        setSystem(
+          data.openaiConfigured ? "ok" : "warn",
+          data.openaiConfigured ? "sistema pronto" : "backend sem chave"
+        );
 
-        state.vlibrasReady = true;
-
-        setAvatarStatus("ready", "pronto");
-
-        ui.avatarInstruction.textContent =
-          "VLibras aberto. As frases serão enviadas automaticamente.";
-
-        return true;
+        return Boolean(data.openaiConfigured);
       } catch (error) {
-        console.error("VLibras init:", error);
-
-        setAvatarStatus("error", "não iniciou");
-
-        ui.avatarInstruction.textContent =
-          "Não foi possível abrir automaticamente. Clique no botão azul do VLibras na lateral da página e tente novamente.";
-
+        console.error(error);
+        setBackendMessage("error", "Não consegui acessar o backend. Confira o endereço e o deploy.");
+        setSystem("bad", "backend indisponível");
         return false;
       }
     }
 
-    function bindVLibrasEvents() {
-      if (state.playerEventsBound) return;
+    async function setupMicrophone() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("getUserMedia não está disponível neste navegador.");
+      }
 
-      const player = window.plugin?.player;
+      if (!window.MediaRecorder) {
+        throw new Error("MediaRecorder não está disponível neste navegador.");
+      }
 
-      if (!player || typeof player.on !== "function") {
+      state.stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1
+        }
+      });
+
+      setupVolumeMeter(state.stream);
+    }
+
+    function setupVolumeMeter(stream) {
+      state.audioContext =
+        new (window.AudioContext || window.webkitAudioContext)();
+
+      const source =
+        state.audioContext.createMediaStreamSource(stream);
+
+      state.analyser =
+        state.audioContext.createAnalyser();
+
+      state.analyser.fftSize = 1024;
+      source.connect(state.analyser);
+
+      const data =
+        new Uint8Array(state.analyser.fftSize);
+
+      const tick = () => {
+        if (!state.analyser || !state.running) {
+          return;
+        }
+
+        state.analyser.getByteTimeDomainData(data);
+
+        let sum = 0;
+
+        for (const sample of data) {
+          const normalized = (sample - 128) / 128;
+          sum += normalized * normalized;
+        }
+
+        const rms = Math.sqrt(sum / data.length);
+        const level = Math.min(100, rms * 500);
+
+        ui.volumeBar.style.width = level + "%";
+
+        const threshold =
+          Number(ui.voiceThreshold.value || 0.015);
+
+        if (rms > threshold) {
+          state.recentVoiceDetected = true;
+        }
+
+        state.analyserFrame =
+          requestAnimationFrame(tick);
+      };
+
+      tick();
+    }
+
+    function bestMimeType() {
+      const options = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus"
+      ];
+
+      return options.find(
+        type => MediaRecorder.isTypeSupported(type)
+      ) || "";
+    }
+
+    function startRecordingChunk() {
+      if (!state.running || !state.stream) {
         return;
       }
 
-      player.on("gloss:end", () => {
-        state.translating = false;
-        state.currentTranslation = "";
+      state.recentVoiceDetected = false;
 
-        ui.nowTranslating.textContent =
-          state.queue.length
-            ? "Preparando próxima frase…"
-            : "Aguardando o professor falar…";
+      const mimeType = bestMimeType();
+      const chunks = [];
 
-        setAvatarStatus("ready", "pronto");
-        processTranslationQueue();
+      const recorder = mimeType
+        ? new MediaRecorder(state.stream, { mimeType })
+        : new MediaRecorder(state.stream);
+
+      state.recorder = recorder;
+
+      recorder.addEventListener("dataavailable", event => {
+        if (event.data && event.data.size > 0) {
+          chunks.push(event.data);
+        }
       });
 
-      player.on("translate:start", () => {
-        setAvatarStatus("busy", "traduzindo");
+      recorder.addEventListener("stop", () => {
+        const blob = new Blob(
+          chunks,
+          { type: recorder.mimeType || "audio/webm" }
+        );
+
+        /*
+          Se houve voz perceptível, envia.
+          Se ficou silencioso, economiza chamadas da API.
+        */
+        if (state.recentVoiceDetected && blob.size > 1000) {
+          queueAudioBlob(blob);
+        }
+
+        if (state.running) {
+          setTimeout(startRecordingChunk, 40);
+        }
       });
 
-      player.on("translate:end", () => {
-        setAvatarStatus("busy", "sinalizando");
-      });
+      recorder.start();
 
-      player.on("error", () => {
-        state.translating = false;
-        setAvatarStatus("error", "erro");
-        setTimeout(processTranslationQueue, 700);
-      });
-
-      state.playerEventsBound = true;
+      state.recorderTimer = setTimeout(() => {
+        if (recorder.state === "recording") {
+          recorder.stop();
+        }
+      }, Number(ui.chunkDuration.value || 3500));
     }
 
-    function enqueueTranslation(text, source = "microfone") {
-      const sentence = cleanSentence(text);
-
-      if (!sentence) return;
-
-      const item = {
-        id: crypto.randomUUID(),
-        text: sentence,
-        source,
-        createdAt: new Date()
-      };
-
-      state.queue.push(item);
-      state.history.push(item);
-
-      renderQueue();
-      renderHistory();
-      processTranslationQueue();
+    function queueAudioBlob(blob) {
+      state.requestQueue.push(blob);
+      processAudioQueue();
     }
 
-    async function processTranslationQueue() {
+    async function processAudioQueue() {
       if (
-        state.translating ||
-        state.queue.length === 0
+        state.sendingAudio ||
+        state.requestQueue.length === 0
       ) {
         return;
       }
 
-      const ready = await openVLibrasAutomatically();
+      const base = backendBase();
 
-      if (!ready) return;
+      if (!base) {
+        return;
+      }
 
-      const item = state.queue.shift();
+      state.sendingAudio = true;
+      const blob = state.requestQueue.shift();
 
-      state.translating = true;
-      state.currentTranslation = item.text;
+      ui.apiState.textContent =
+        `API: transcrevendo • ${state.requestQueue.length} na fila`;
 
-      renderQueue();
-
-      ui.nowTranslating.textContent = item.text;
-
-      setAvatarStatus("busy", "traduzindo");
+      state.workingText = "…";
+      renderCaption();
 
       try {
-        window.plugin.player.translate(item.text);
+        const audioBase64 = await toBase64(blob);
 
-        const timeout = Math.min(
-          20000,
-          Math.max(
-            5000,
-            item.text.split(/\s+/).length * 950
-          )
-        );
+        const response = await fetch(base + "/api/transcribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            audioBase64,
+            mimeType: blob.type || "audio/webm"
+          })
+        });
 
-        setTimeout(() => {
-          if (
-            state.translating &&
-            state.currentTranslation === item.text
-          ) {
-            state.translating = false;
-            state.currentTranslation = "";
-            processTranslationQueue();
-          }
-        }, timeout);
+        const data = await response.json();
 
-      } catch (error) {
-        console.error(error);
-
-        state.translating = false;
-        state.currentTranslation = "";
-
-        setAvatarStatus("error", "erro");
-
-        setTimeout(processTranslationQueue, 600);
-      }
-    }
-
-    function scheduleSegmentCommit() {
-      clearTimeout(state.segmentTimer);
-
-      state.segmentTimer = setTimeout(
-        commitSpeechBuffer,
-        currentPauseMs()
-      );
-    }
-
-    function addSpeechChunk(text, isFinal = false) {
-      const chunk = cleanSentence(text);
-
-      if (!chunk) return;
-
-      if (isFinal) {
-        if (state.speechBuffer) {
-          state.speechBuffer += " ";
+        if (!response.ok) {
+          throw new Error(data.error || "Erro de transcrição.");
         }
 
-        state.speechBuffer += chunk;
-        state.lastInterim = "";
-      } else {
-        state.lastInterim = chunk;
-      }
+        const text = cleanText(data.text);
 
-      renderCaption();
-      scheduleSegmentCommit();
+        if (text && !looksLikeSilence(text)) {
+          addTranscript(text);
+        }
+      } catch (error) {
+        console.error(error);
+        ui.apiState.textContent = "API: erro";
+        setBackendMessage("error", "Erro durante a transcrição: " + error.message);
+      } finally {
+        state.workingText = "";
+        state.sendingAudio = false;
+        renderCaption();
+        processAudioQueue();
+      }
     }
 
-    function commitSpeechBuffer() {
-      const combined = cleanSentence(
-        `${state.speechBuffer} ${state.lastInterim}`
-      );
+    function looksLikeSilence(text) {
+      const normalized =
+        cleanText(text).toLocaleLowerCase("pt-BR");
 
-      state.speechBuffer = "";
-      state.lastInterim = "";
+      const ignored = new Set([
+        "",
+        "...",
+        "obrigado.",
+        "obrigado",
+        "legendas pela comunidade amara.org",
+        "silêncio",
+        "[silêncio]"
+      ]);
 
-      if (!combined) return;
+      return ignored.has(normalized);
+    }
 
-      if (state.finalTranscript) {
-        state.finalTranscript += " ";
+    function addTranscript(text) {
+      const sentence = cleanText(text);
+
+      if (!sentence) return;
+
+      const previous = state.history.at(-1);
+
+      if (previous?.text === sentence) {
+        return;
       }
 
-      state.finalTranscript += combined;
+      state.history.push({
+        id: crypto.randomUUID(),
+        text: sentence,
+        createdAt: new Date()
+      });
 
-      enqueueTranslation(combined, "microfone");
+      state.finalText +=
+        (state.finalText ? " " : "") + sentence;
+
       renderCaption();
+      renderHistory();
+
+      enqueueLibras(sentence);
     }
 
     function renderCaption() {
       ui.caption.replaceChildren();
 
-      const provisional = cleanSentence(
-        `${state.speechBuffer} ${state.lastInterim}`
-      );
-
-      if (!state.finalTranscript && !provisional) {
+      if (!state.finalText && !state.workingText) {
         const span = document.createElement("span");
         span.className = "placeholder";
-        span.textContent =
-          "A fala do professor aparecerá aqui…";
+        span.textContent = "A transcrição aparecerá aqui…";
         ui.caption.appendChild(span);
-        updateWordCount();
-        return;
+      } else {
+        if (state.finalText) {
+          const final = document.createElement("span");
+          final.className = "final-text";
+          final.textContent = state.finalText + " ";
+          ui.caption.appendChild(final);
+        }
+
+        if (state.workingText) {
+          const working = document.createElement("span");
+          working.className = "working-text";
+          working.textContent = state.workingText;
+          ui.caption.appendChild(working);
+        }
       }
 
-      if (state.finalTranscript) {
-        const final = document.createElement("span");
-        final.className = "final-text";
-        final.textContent =
-          `${state.finalTranscript} `;
-        ui.caption.appendChild(final);
-      }
-
-      if (provisional) {
-        const interim = document.createElement("span");
-        interim.className = "interim-text";
-        interim.textContent = provisional;
-        ui.caption.appendChild(interim);
-      }
-
-      ui.caption.scrollTop =
-        ui.caption.scrollHeight;
-
-      updateWordCount();
-    }
-
-    function updateWordCount() {
-      const text = cleanSentence(
-        `${state.finalTranscript} ${state.speechBuffer} ${state.lastInterim}`
-      );
-
-      const count =
-        text
-          ? text.split(/\s+/).filter(Boolean).length
+      const words =
+        state.finalText.trim()
+          ? state.finalText.trim().split(/\s+/).length
           : 0;
 
       ui.wordCount.textContent =
-        `${count} ${count === 1 ? "palavra" : "palavras"}`;
-    }
+        `${words} ${words === 1 ? "palavra" : "palavras"}`;
 
-    function renderQueue() {
-      ui.queueCount.textContent =
-        String(state.queue.length);
+      ui.apiState.textContent =
+        state.sendingAudio
+          ? `API: transcrevendo • ${state.requestQueue.length} na fila`
+          : state.running
+            ? `API: ouvindo • ${state.requestQueue.length} na fila`
+            : "API: parada";
 
-      ui.queueList.replaceChildren();
-
-      if (state.queue.length === 0) {
-        const li = document.createElement("li");
-        li.className = "empty";
-        li.textContent =
-          "Nenhuma frase aguardando.";
-        ui.queueList.appendChild(li);
-        return;
-      }
-
-      state.queue.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.textContent =
-          `${index + 1}. ${item.text}`;
-        ui.queueList.appendChild(li);
-      });
+      ui.caption.scrollTop =
+        ui.caption.scrollHeight;
     }
 
     function renderHistory() {
       ui.historyList.replaceChildren();
 
-      if (state.history.length === 0) {
+      if (!state.history.length) {
         const li = document.createElement("li");
         li.className = "empty";
-        li.textContent =
-          "Nenhuma frase finalizada.";
+        li.textContent = "Nenhuma transcrição ainda.";
         ui.historyList.appendChild(li);
         return;
       }
@@ -1050,268 +908,377 @@
             second: "2-digit"
           }).format(item.createdAt);
 
-        const text =
-          document.createElement("span");
-
-        text.textContent = item.text;
-
-        li.append(time, text);
-
+        li.append(time, document.createTextNode(item.text));
         ui.historyList.appendChild(li);
       });
     }
 
-    function setupRecognition() {
-      const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
 
-      if (!SpeechRecognition) {
-        state.recognition = null;
+    /* =====================================================
+       VLIBRAS
+       ===================================================== */
+
+    function waitFor(condition, timeoutMs = 15000, intervalMs = 120) {
+      const start = Date.now();
+
+      return new Promise((resolve, reject) => {
+        const tick = () => {
+          try {
+            const result = condition();
+
+            if (result) {
+              resolve(result);
+              return;
+            }
+          } catch {}
+
+          if (Date.now() - start > timeoutMs) {
+            reject(new Error("Tempo limite do VLibras excedido."));
+            return;
+          }
+
+          setTimeout(tick, intervalMs);
+        };
+
+        tick();
+      });
+    }
+
+    async function prepareVLibras() {
+      if (state.vlibrasReady) {
+        return true;
+      }
+
+      setAvatarStatus("busy", "inicializando");
+
+      try {
+        const button = await waitFor(() => {
+          const container =
+            document.querySelector("[vw-access-button]");
+
+          return container?.querySelector(".access-button")
+            ? container
+            : null;
+        }, 18000);
+
+        if (!window.plugin) {
+          button.click();
+        }
+
+        await waitFor(() => {
+          const plugin = window.plugin;
+
+          return Boolean(
+            plugin &&
+            (
+              typeof plugin.translate === "function" ||
+              typeof plugin.player?.translate === "function"
+            )
+          );
+        }, 22000);
+
+        bindVLibrasEvents();
+
+        state.vlibrasReady = true;
+        setAvatarStatus("ready", "pronto");
+
+        ui.avatarInstruction.textContent =
+          "VLibras preparado. As transcrições serão enviadas automaticamente.";
+
+        return true;
+      } catch (error) {
+        console.warn(error);
+        setAvatarStatus("error", "não iniciou");
+
+        ui.avatarInstruction.textContent =
+          "O VLibras não abriu automaticamente. Clique no botão azul do VLibras; a legenda continuará funcionando.";
+
+        return false;
+      }
+    }
+
+    function playerObject() {
+      return window.plugin?.player || null;
+    }
+
+    function bindVLibrasEvents() {
+      if (state.playerEventsBound) return;
+
+      const player = playerObject();
+
+      if (!player || typeof player.on !== "function") {
         return;
       }
 
-      const recognition =
-        new SpeechRecognition();
+      player.on("gloss:end", () => {
+        finishCurrentLibras();
+      });
 
-      recognition.lang =
-        ui.languageSelect.value;
+      player.on("animation:end", () => {
+        /*
+          Fallback para versões em que gloss:end não é exposto
+          da mesma forma.
+        */
+        if (state.translating) {
+          finishCurrentLibras();
+        }
+      });
 
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.maxAlternatives = 1;
+      player.on("error", () => {
+        state.translating = false;
+        state.currentTranslation = "";
+        setAvatarStatus("error", "erro");
+        setTimeout(processLibrasQueue, 700);
+      });
 
-      recognition.onstart = () => {
+      state.playerEventsBound = true;
+    }
+
+    function finishCurrentLibras() {
+      state.translating = false;
+      state.currentTranslation = "";
+
+      ui.nowTranslating.textContent =
+        state.librasQueue.length
+          ? "Preparando próxima frase…"
+          : "Aguardando fala…";
+
+      setAvatarStatus("ready", "pronto");
+      processLibrasQueue();
+    }
+
+    function enqueueLibras(text) {
+      state.librasQueue.push({
+        id: crypto.randomUUID(),
+        text: cleanText(text)
+      });
+
+      renderLibrasQueue();
+      processLibrasQueue();
+    }
+
+    function renderLibrasQueue() {
+      ui.queueCount.textContent =
+        String(state.librasQueue.length);
+
+      ui.queueList.replaceChildren();
+
+      if (!state.librasQueue.length) {
+        const li = document.createElement("li");
+        li.className = "empty";
+        li.textContent = "Nenhuma frase aguardando.";
+        ui.queueList.appendChild(li);
+        return;
+      }
+
+      state.librasQueue.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}. ${item.text}`;
+        ui.queueList.appendChild(li);
+      });
+    }
+
+    async function processLibrasQueue() {
+      if (
+        state.translating ||
+        !state.librasQueue.length
+      ) {
+        return;
+      }
+
+      const ready = await prepareVLibras();
+
+      if (!ready) return;
+
+      const item = state.librasQueue.shift();
+      renderLibrasQueue();
+
+      state.translating = true;
+      state.currentTranslation = item.text;
+
+      ui.nowTranslating.textContent = item.text;
+      setAvatarStatus("busy", "traduzindo");
+
+      try {
+        /*
+          O Widget não documenta oficialmente uma API pública
+          para automação. Tentamos os métodos internos conhecidos.
+        */
+        if (typeof window.plugin?.translate === "function") {
+          window.plugin.translate(item.text);
+        } else if (
+          typeof window.plugin?.player?.translate === "function"
+        ) {
+          window.plugin.player.translate(item.text);
+        } else {
+          throw new Error("Método automático do VLibras não encontrado.");
+        }
+
+        /*
+          Segurança contra fila travada caso o evento final não venha.
+        */
+        const fallbackMs = Math.min(
+          24000,
+          Math.max(
+            6000,
+            item.text.split(/\s+/).length * 1100
+          )
+        );
+
+        setTimeout(() => {
+          if (
+            state.translating &&
+            state.currentTranslation === item.text
+          ) {
+            finishCurrentLibras();
+          }
+        }, fallbackMs);
+      } catch (error) {
+        console.error(error);
+        state.translating = false;
+        state.currentTranslation = "";
+        setAvatarStatus("error", "automação indisponível");
+      }
+    }
+
+
+    /* =====================================================
+       CONTROLES
+       ===================================================== */
+
+    async function startAutomatic() {
+      const backendOk = await testBackend();
+
+      if (!backendOk) {
+        return;
+      }
+
+      try {
+        setMic(true, "Solicitando microfone…", "Clique em Permitir se o Chrome perguntar.");
+
+        await setupMicrophone();
+
         state.running = true;
 
         setMic(
           true,
           "Ouvindo o professor",
-          "Fale normalmente e faça pequenas pausas."
-        );
-      };
-
-      recognition.onresult = event => {
-        let interim = "";
-
-        for (
-          let i = event.resultIndex;
-          i < event.results.length;
-          i++
-        ) {
-          const result =
-            event.results[i];
-
-          const text =
-            cleanSentence(
-              result[0]?.transcript || ""
-            );
-
-          if (!text) continue;
-
-          if (result.isFinal) {
-            addSpeechChunk(text, true);
-          } else {
-            interim += `${text} `;
-          }
-        }
-
-        if (interim.trim()) {
-          state.lastInterim =
-            cleanSentence(interim);
-
-          renderCaption();
-          scheduleSegmentCommit();
-        }
-      };
-
-      recognition.onerror = event => {
-        console.warn(
-          "SpeechRecognition:",
-          event.error
+          "Áudio capturado diretamente; não usa pesquisa por voz."
         );
 
-        let message = event.error;
+        setSystem("ok", "tradução automática ativa");
+        renderCaption();
 
-        if (
-          event.error === "not-allowed" ||
-          event.error === "service-not-allowed"
-        ) {
-          message =
-            "Microfone/reconhecimento bloqueado pelo navegador ou pela política do computador.";
-          state.recognitionRestart = false;
-        }
-
-        if (event.error === "no-speech") {
-          message =
-            "O microfone abriu, mas nenhuma fala foi reconhecida. Fale mais perto do microfone.";
-        }
-
-        if (event.error === "audio-capture") {
-          message =
-            "O navegador não conseguiu acessar nenhum microfone.";
-          state.recognitionRestart = false;
-        }
-
-        if (event.error === "network") {
-          message =
-            "O serviço de reconhecimento de voz não conseguiu acessar a rede.";
-          state.recognitionRestart = false;
-        }
-
-        setMic(
-          false,
-          "Problema no microfone",
-          message
-        );
-      };
-
-      recognition.onend = () => {
-        if (state.recognitionRestart) {
-          setTimeout(() => {
-            try {
-              recognition.start();
-            } catch {}
-          }, 250);
-
-          return;
-        }
+        prepareVLibras();
+        startRecordingChunk();
+      } catch (error) {
+        console.error(error);
 
         state.running = false;
 
         setMic(
           false,
-          "Microfone parado",
-          "Clique em iniciar."
+          "Não foi possível abrir o microfone",
+          error.message
         );
-      };
 
-      state.recognition = recognition;
+        setSystem("bad", "microfone indisponível");
+      }
     }
 
-    async function startAll() {
-      /*
-        IMPORTANTE:
-        O microfone NÃO espera mais o VLibras.
-        A captura começa imediatamente e o avatar é preparado em paralelo.
-      */
+    function stopAutomatic() {
+      state.running = false;
 
-      if (!state.recognition) {
-        setMic(
-          false,
-          "Reconhecimento de voz indisponível",
-          "Abra no Chrome ou Edge. Se continuar assim, o computador pode estar bloqueando o recurso."
-        );
-        return;
-      }
-
-      state.recognition.lang =
-        ui.languageSelect.value;
-
-      state.recognitionRestart = true;
-
-      setMic(
-        true,
-        "Solicitando microfone…",
-        "Se o navegador perguntar, clique em Permitir."
-      );
+      clearTimeout(state.recorderTimer);
 
       try {
-        state.recognition.start();
-      } catch (error) {
-        console.error("Falha ao iniciar reconhecimento:", error);
-
-        setMic(
-          false,
-          "Não foi possível iniciar",
-          "Feche outras páginas que estejam usando o microfone e tente novamente."
-        );
-      }
-
-      // VLibras carrega em paralelo. Se falhar, a legenda continua funcionando.
-      openVLibrasAutomatically().catch(error => {
-        console.warn("VLibras em paralelo:", error);
-      });
-    }
-
-    function stopAll() {
-      clearTimeout(state.segmentTimer);
-      commitSpeechBuffer();
-
-      state.recognitionRestart = false;
-
-      try {
-        state.recognition?.stop();
+        if (state.recorder?.state === "recording") {
+          state.recorder.stop();
+        }
       } catch {}
 
-      state.running = false;
+      if (state.stream) {
+        state.stream.getTracks().forEach(track => track.stop());
+      }
+
+      if (state.analyserFrame) {
+        cancelAnimationFrame(state.analyserFrame);
+      }
+
+      if (state.audioContext) {
+        state.audioContext.close().catch(() => {});
+      }
+
+      state.stream = null;
+      state.recorder = null;
+      state.analyser = null;
+      state.audioContext = null;
+
+      ui.volumeBar.style.width = "0%";
 
       setMic(
         false,
         "Microfone parado",
-        "Tradução interrompida."
+        "Clique em iniciar para continuar."
       );
+
+      setSystem("warn", "tradução parada");
+      renderCaption();
     }
 
     function manualTranslate() {
-      const text =
-        cleanSentence(
-          ui.manualText.value
-        );
+      const text = cleanText(ui.manualText.value);
 
       if (!text) return;
 
-      if (state.finalTranscript) {
-        state.finalTranscript += " ";
-      }
+      enqueueLibras(text);
+      ui.manualText.value = "";
+    }
 
-      state.finalTranscript += text;
-
-      enqueueTranslation(
-        text,
-        "manual"
-      );
+    function clearAll() {
+      state.finalText = "";
+      state.workingText = "";
+      state.history = [];
+      state.requestQueue = [];
+      state.librasQueue = [];
 
       renderCaption();
+      renderHistory();
+      renderLibrasQueue();
 
-      ui.manualText.value = "";
+      ui.nowTranslating.textContent = "Aguardando fala…";
     }
 
     function downloadHistory() {
       if (!state.history.length) return;
 
-      const content = [
-        "TRADUTOR DE SALA PARA LIBRAS - PSC",
+      const text = [
+        "TRADUTOR DE SALA PARA LIBRAS - V3",
         new Date().toLocaleString("pt-BR"),
         "",
-        ...state.history.map(
-          item =>
-            `[${new Intl.DateTimeFormat("pt-BR", {
+        ...state.history.map(item => {
+          const time =
+            new Intl.DateTimeFormat("pt-BR", {
               hour: "2-digit",
               minute: "2-digit",
               second: "2-digit"
-            }).format(item.createdAt)}] ${item.text}`
-        )
+            }).format(item.createdAt);
+
+          return `[${time}] ${item.text}`;
+        })
       ].join("\n");
 
-      const blob = new Blob(
-        [content],
-        {
-          type:
-            "text/plain;charset=utf-8"
-        }
-      );
+      const blob =
+        new Blob([text], {
+          type: "text/plain;charset=utf-8"
+        });
 
-      const url =
-        URL.createObjectURL(blob);
-
-      const a =
-        document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
 
       a.href = url;
-
       a.download =
-        `traducao-sala-${new Date()
+        `tradutor-libras-${new Date()
           .toISOString()
           .slice(0,10)}.txt`;
 
@@ -1322,104 +1289,54 @@
       URL.revokeObjectURL(url);
     }
 
-    function clearEverything() {
-      state.finalTranscript = "";
-      state.speechBuffer = "";
-      state.lastInterim = "";
-      state.queue = [];
-      state.history = [];
-
-      ui.nowTranslating.textContent =
-        "Aguardando o professor falar…";
-
-      renderCaption();
-      renderQueue();
-      renderHistory();
-    }
-
     async function toggleFullscreen() {
       const panel =
         document.querySelector(".live-panel");
 
-      try {
-        if (!document.fullscreenElement) {
-          await panel.requestFullscreen();
-        } else {
-          await document.exitFullscreen();
-        }
-      } catch (error) {
-        console.warn(error);
+      if (!document.fullscreenElement) {
+        await panel.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
       }
     }
 
-    ui.startButton.addEventListener(
-      "click",
-      startAll
-    );
+    ui.testBackendButton.addEventListener("click", testBackend);
+    ui.startButton.addEventListener("click", startAutomatic);
+    ui.stopButton.addEventListener("click", stopAutomatic);
+    ui.manualTranslateButton.addEventListener("click", manualTranslate);
+    ui.clearButton.addEventListener("click", clearAll);
+    ui.downloadButton.addEventListener("click", downloadHistory);
+    ui.fullscreenButton.addEventListener("click", toggleFullscreen);
 
-    ui.stopButton.addEventListener(
-      "click",
-      stopAll
-    );
+    ui.fontSize.addEventListener("input", event => {
+      ui.caption.style.fontSize =
+        event.target.value + "px";
+    });
 
-    ui.manualTranslateButton.addEventListener(
-      "click",
-      manualTranslate
-    );
+    ui.backendUrl.addEventListener("change", () => {
+      localStorage.setItem(
+        "tradutor-backend-url",
+        backendBase()
+      );
+    });
 
-    ui.manualText.addEventListener(
-      "keydown",
-      event => {
-        if (
-          (event.ctrlKey ||
-            event.metaKey) &&
-          event.key === "Enter"
-        ) {
-          manualTranslate();
-        }
-      }
-    );
+    const savedBackend =
+      localStorage.getItem("tradutor-backend-url");
 
-    ui.downloadButton.addEventListener(
-      "click",
-      downloadHistory
-    );
+    if (savedBackend) {
+      ui.backendUrl.value = savedBackend;
+      setSystem("warn", "backend salvo • teste a conexão");
+    }
 
-    ui.clearButton.addEventListener(
-      "click",
-      clearEverything
-    );
-
-    ui.fullscreenButton.addEventListener(
-      "click",
-      toggleFullscreen
-    );
-
-    ui.fontSize.addEventListener(
-      "input",
-      event => {
-        ui.caption.style.fontSize =
-          `${event.target.value}px`;
-      }
-    );
-
-    setupRecognition();
     renderCaption();
-    renderQueue();
     renderHistory();
-    checkCompatibility();
+    renderLibrasQueue();
 
     setTimeout(() => {
       if (window.VLibras) {
-        setAvatarStatus(
-          "busy",
-          "widget carregado"
-        );
+        setAvatarStatus("busy", "widget carregado");
       } else {
-        setAvatarStatus(
-          "error",
-          "sem conexão"
-        );
+        setAvatarStatus("error", "VLibras não carregou");
       }
     }, 1200);
   </script>
