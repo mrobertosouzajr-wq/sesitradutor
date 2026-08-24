@@ -107,7 +107,7 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 
 <footer>Projeto educacional de acessibilidade e inclusão por meio da tecnologia • SESI</footer>
 
-<!-- Widget do VLibras -->
+!-- Widget Oficial do VLibras -->
 <div vw class="enabled">
   <div vw-access-button class="active"></div>
   <div vw-plugin-wrapper>
@@ -115,12 +115,9 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
   </div>
 </div>
 
-<!-- Script oficial -->
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-
 <script>
-  // Aponta diretamente para o repositório CDN sem passar pelo redirecionamento com erro de CORS
-  new window.VLibras.Widget('https://cdn.jsdelivr.net/gh/spbgovbr-vlibras/vlibras-portal@v7.5.0/app');
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
 </script>
 
 <script>
