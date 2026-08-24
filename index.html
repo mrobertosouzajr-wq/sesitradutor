@@ -19,7 +19,7 @@ header{background:var(--navy);border-bottom:4px solid var(--red);color:#fff;padd
 main{max-width:1250px;margin:22px auto;padding:0 16px}.layout{display:grid;grid-template-columns:340px 1fr;gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 14px rgba(10,30,60,.05);margin-bottom:18px}
 .card h2{font-size:19px;margin:0 0 16px;color:var(--navy)}
-button{width:100%;border:0;border-radius:9px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;margin:0 0 10px;transition:transform .05s ease}
+button{width:100%;border:0;border-radius:99px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;margin:0 0 10px;transition:transform .05s ease}
 button:active{transform:scale(.98)}
 .primary{background:var(--navy);color:#fff}.primary:hover{background:var(--navy2)}.secondary{background:#eef2f7;color:var(--text)}.danger{background:#fff;color:var(--err);border:1px solid #efcaca}
 button:disabled{opacity:.48;cursor:not-allowed;transform:none}
@@ -104,7 +104,7 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
     <div class="avatar-box">
       <div class="avatar-message">
         <h3>AVATAR VLibras</h3>
-        <p>Abra o botão do VLibras no canto da página para visualizar o personagem. Quando o player estiver pronto, as frases finais serão enviadas automaticamente.</p>
+        <p>O personagem será aberto e inicializado automaticamente ao iniciar a tradução. As frases finais reconhecidas serão enviadas para interpretação em tempo real.</p>
       </div>
       <div class="vlibras-mark">VLibras</div>
     </div>
@@ -132,15 +132,9 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>
 /*
-  V3 AUTOMÁTICA + RECONEXÃO
-  - O VLibras é carregado pela integração oficial (script + init).
-  - O player real (avatar 3D) só termina de carregar depois que o
-    botão de acesso é clicado, então clicamos nele por script assim
-    que a página carrega, para adiantar o download dos arquivos.
-  - Se o servidor do VLibras estiver instável (ex.: erro 503) e o
-    método translate() não aparecer dentro do tempo limite, mostramos
-    um aviso claro e um botão para tentar de novo, em vez de travar
-    silenciosamente. A fila e a transcrição continuam funcionando.
+  V3 AUTOMÁTICA + RECONEXÃO + ABERTURA AUTOMÁTICA
+  - O VLibras é carregado pela integração oficial.
+  - O player e o widget são abertos e acionados automaticamente via código e vinculados também ao clique de início de fala.
 */
 let vlibrasReady=false;
 let vlibrasTimer=null;
@@ -184,31 +178,41 @@ function startVlibrasWatch(){
   },VLIBRAS_POLL_MS);
 }
 
-function tryOpenWidget(){
-  // Clica no botão de acesso do VLibras por código para adiantar o
-  // carregamento do player, sem exigir clique manual do professor.
+function forceOpenVLibras(){
   try{
-    const btn=document.querySelector("[vw-access-button]");
+    if(window.plugin && typeof window.plugin.open === 'function'){
+      window.plugin.open();
+    }
+    const btn = document.querySelector("[vw-access-button]") || 
+                document.querySelector(".access-button") || 
+                document.querySelector(".vw-access-button");
     if(btn) btn.click();
-  }catch(e){}
+  }catch(e){
+    console.log("Aguardando carregamento do VLibras...");
+  }
 }
 
 window.addEventListener("load",function(){
   try{
-    new window.VLibras.Widget("https://vlibras.gov.br/app");
+    new window.VLibras.Widget({
+      rootPath: "https://vlibras.gov.br/app",
+      personalization: "https://vlibras.gov.br/config"
+    });
   }catch(e){
     setVlibrasStatus("Não foi possível iniciar o VLibras. Verifique a conexão com a internet.","error");
     retryBtn.style.display="inline-block";
     return;
   }
-  setTimeout(tryOpenWidget,600);
+  setTimeout(forceOpenVLibras, 500);
+  setTimeout(forceOpenVLibras, 1200);
+  setTimeout(forceOpenVLibras, 2500);
   startVlibrasWatch();
 });
 
 retryBtn.onclick=function(){
   vlibrasReady=false;
   setVlibrasStatus("Tentando reconectar ao VLibras...","warn");
-  tryOpenWidget();
+  forceOpenVLibras();
   startVlibrasWatch();
 };
 </script>
@@ -364,6 +368,7 @@ function buildRecognition(){
 
 startBtn.onclick=()=>{
   if(!Recognition)return;
+  forceOpenVLibras();
   running=true;finalBuffer="";
   recognition=buildRecognition();
   try{recognition.start();}catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
