@@ -28,26 +28,10 @@ button:disabled{opacity:.48;cursor:not-allowed;transform:none}
 label{font-size:14px;font-weight:700;display:block;margin-bottom:8px}.field{margin-bottom:16px}
 select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--text);font:inherit}
 textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:10px;padding:14px;font:16px/1.5 Arial;resize:vertical;color:var(--text)}
-.small{font-size:12.5px;line-height:1.55;color:var(--muted)}
 .info{background:#edf5ff;border-left:4px solid var(--blue);padding:14px;border-radius:8px;font-size:13px;line-height:1.5}
 .maincard{min-height:100%}
 
-/* Estilo do container de iframe direto do VLibras */
-.vlibras-iframe-container {
-  width: 100%;
-  height: 480px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
-  background: #092754;
-}
-.vlibras-iframe-container iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.queue{margin-top:18px}.table{border:1px solid var(--line);border-radius:999px;overflow:hidden;border-radius:9px;}
+.queue{margin-top:18px}.table{border:1px solid var(--line);border-radius:9px;overflow:hidden}
 .row{display:grid;grid-template-columns:65px 1fr 150px;gap:12px;padding:11px 13px;border-bottom:1px solid #edf1f5;font-size:13px;align-items:center}.row:last-child{border-bottom:0}.head{background:#f5f7fa;font-weight:700;color:var(--navy)}.badge{font-size:12px;font-weight:700}.badge.ok{color:var(--ok)}.badge.pending{color:var(--warn)}.badge.err{color:var(--err)}
 .row.current{background:#fff8e7}
 footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-size:13px;margin-top:20px}
@@ -102,7 +86,7 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 
     <section class="card">
       <h2>COMO FUNCIONA</h2>
-      <div class="info">O professor clica em Iniciar. Conforme ele fala, o texto é reconhecido, gravado no campo de transcrição e enviado automaticamente para a fila de tradução.</div>
+      <div class="info">Ligue a gravação uma vez. Suas frases faladas serão transcritas na tela e enviadas de forma automática diretamente para o avatar do VLibras ao lado!</div>
     </section>
   </aside>
 
@@ -111,12 +95,7 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
     <textarea id="transcript" placeholder="O texto reconhecido aparecerá aqui em tempo real..." aria-label="Transcrição automática"></textarea>
 
     <div style="height:18px"></div>
-    <h2>TRADUÇÃO PARA LIBRAS (PÁGINA OFICIAL VLIBRAS)</h2>
-    
-    <div class="vlibras-iframe-container">
-      <iframe id="vlibrasFrame" src="https://vlibras.gov.br/" title="VLibras Tradutor Oficial"></iframe>
-    </div>
-    <div id="vlibrasStatus" class="status ok" style="margin-top:12px">Portal oficial do VLibras embutido com sucesso.</div>
+    <div id="vlibrasStatus" class="status warn">Carregando o avatar do VLibras na lateral...</div>
 
     <div class="queue">
       <h2>FILA DE TRADUÇÃO AUTOMÁTICA</h2>
@@ -131,6 +110,16 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 
 <footer>Projeto educacional de acessibilidade e inclusão por meio da tecnologia • SESI</footer>
 
+<!-- Widget Oficial do VLibras na Lateral -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
 <script>
 const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const startBtn=document.getElementById("startBtn"), stopBtn=document.getElementById("stopBtn");
@@ -139,6 +128,7 @@ const support=document.getElementById("support"), transcript=document.getElement
 const queueEl=document.getElementById("queue"), empty=document.getElementById("empty");
 const auto=document.getElementById("auto"), pauseSelect=document.getElementById("pause");
 const liveBadge=document.getElementById("livebadge"), liveBadgeText=document.getElementById("livebadgeText");
+const vStatusEl=document.getElementById("vlibrasStatus");
 
 let recognition=null, running=false, finalBuffer="", sentenceTimer=null, order=0;
 const queue=[];
@@ -152,7 +142,25 @@ function status(text,type="warn"){
   statusEl.className="status "+type;
   statusEl.textContent=text;
 }
-function addQueue(text,state="Aguardando"){
+
+function getVlibrasPlugin(){
+  try{
+    if(window.plugin && window.plugin.player && typeof window.plugin.player.translate==="function"){
+      return window.plugin.player;
+    }
+  }catch(e){}
+  return null;
+}
+
+// Verifica periodicamente se o widget abriu e inicializou
+setInterval(()=>{
+  if(getVlibrasPlugin()){
+    vStatusEl.className="status ok";
+    vStatusEl.textContent="Avatar VLibras pronto na lateral. As frases faladas serão enviadas automaticamente.";
+  }
+}, 1000);
+
+function addQueue(text,state="Na fila"){
   if(empty) empty.remove();
   order++;
   const row=document.createElement("div"); row.className="row";
@@ -177,7 +185,25 @@ async function processQueue(){
     if(item.sentFlag) continue;
     item.sentFlag=true;
     item.row.classList.add("current");
-    setQueueState(item,"Transcrito com Sucesso","ok");
+    
+    if(!auto.checked){
+      setQueueState(item,"Apenas transcrito","ok");
+    } else {
+      const player = getVlibrasPlugin();
+      if(player){
+        try{
+          player.translate(item.text);
+          setQueueState(item,"Enviado ao Avatar","ok");
+          const words = item.text.split(/\s+/).filter(Boolean).length;
+          const waitMs = Math.min(7000, Math.max(2000, words * 400));
+          await new Promise(r => setTimeout(r, waitMs));
+        }catch(e){
+          setQueueState(item,"Erro ao enviar","err");
+        }
+      } else {
+        setQueueState(item,"Avatar não aberto","err");
+      }
+    }
     item.row.classList.remove("current");
   }
   sending=false;
@@ -189,7 +215,7 @@ function flushSentence(){
   finalBuffer="";
   if(!text)return;
   transcript.value=(transcript.value+" "+text).replace(/\s+/g," ").trim();
-  addQueue(text,"Processado");
+  addQueue(text);
   processQueue();
 }
 function scheduleSentence(){
@@ -215,7 +241,7 @@ function buildRecognition(){
 
   r.onstart=()=>{
     startBtn.disabled=true;stopBtn.disabled=false;
-    status("Microfone ativo. O professor pode falar continuamente.","ok");
+    status("Microfone ativo. Pode falar continuamente.","ok");
     setLive(true,"No ar");
   };
   r.onresult=(event)=>{
@@ -256,6 +282,11 @@ startBtn.onclick=()=>{
   recognition=buildRecognition();
   try{
     recognition.start();
+    // Força a abertura/abertura do widget lateral se ainda não estiver aberto
+    const accessBtn = document.querySelector('[vw-access-button]');
+    if(accessBtn && !document.querySelector('.vw-plugin-wrapper.active')) {
+      accessBtn.click();
+    }
   }catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
 };
 stopBtn.onclick=()=>{
