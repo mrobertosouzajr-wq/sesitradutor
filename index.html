@@ -21,17 +21,8 @@
 <div vw class="enabled"><div vw-access-button class="active"></div><div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div></div>
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>
-window.addEventListener('load',()=>{
-  try{
-    window.vlibrasWidget=new window.VLibras.Widget('https://vlibras.gov.br/app');
-    document.getElementById('vlibrasStatus').textContent='VLibras carregado. Abra o botão azul para usar o avatar.';
-    document.getElementById('vlibrasStatus').className='status ok';
-  }catch(e){
-    document.getElementById('vlibrasStatus').textContent='Não foi possível carregar o VLibras. Verifique a internet.';
-    document.getElementById('vlibrasStatus').className='status error';
-  }
-});
-</script>
+<script>window.addEventListener('load',()=>{try{window.vlibrasWidget=new window.VLibras.Widget('https://vlibras.gov.br/app');document.getElementById('vlibrasStatus').textContent='VLibras carregado. Abra o botão azul para usar o avatar.';document.getElementById('vlibrasStatus').className='status ok'}catch(e){document.getElementById('vlibrasStatus').textContent='Não foi possível carregar o VLibras. Verifique a internet.';document.getElementById('vlibrasStatus').className='status error'}});
+
 
 <script>
 (()=>{
