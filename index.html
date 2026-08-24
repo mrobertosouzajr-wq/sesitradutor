@@ -50,6 +50,8 @@
     .history-item { padding: 8px; border-bottom: 1px solid #eee; font-size: 14px; cursor: pointer; }
     .history-item:hover { background: #eef2f7; }
 
+    .info-panel { background: #e8f4fd; border-left: 4px solid var(--primary); padding: 12px; font-size: 13px; border-radius: 4px; margin-bottom: 15px; color: #08385c; }
+
     @media (max-width: 768px) {
       main { grid-template-columns: 1fr; }
       .header-container { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -77,43 +79,33 @@
         <h2>Controle do Microfone</h2>
         <div id="statusBox" class="status-box status-off">Microfone Desligado</div>
         <button id="startBtn" class="btn btn-primary">Iniciar Captura de Voz</button>
-        <button id="stopBtn" class="btn btn-danger" divider disabled>Parar Captura</button>
+        <button id="stopBtn" class="btn btn-danger" disabled>Parar Captura</button>
       </section>
 
       <section class="card">
-        <h2>Status do VLibras</h2>
-        <div id="vlibrasStatus" class="status-box status-on">Widget Oficial Carregado</div>
+        <h2>Apoio à Tradução</h2>
+        <div class="info-panel">
+          Para realizar a tradução visual completa dos sinais em LIBRAS sem travas de CORS do Unity, utilize o portal oficial em paralelo:
+        </div>
+        <a href="https://www.gov.br/vlibras" target="_blank" class="btn btn-secondary" style="text-decoration:none;">Abrir Dicionário VLibras</a>
       </section>
     </aside>
 
     <section>
       <section class="card">
         <h2>Transcrição em Tempo Real</h2>
-        <textarea id="transcriptText" placeholder="Fale e o texto aparecerá aqui. Você pode clicar no histórico para enviar ao avatar..."></textarea>
+        <textarea id="transcriptText" placeholder="Ligue o microfone e fale. O texto da aula aparecerá aqui..."></textarea>
         <button id="clearTextBtn" class="btn btn-secondary">Limpar Texto</button>
       </section>
 
       <section class="card">
-        <h2>Histórico de Frases (Clique para traduzir)</h2>
+        <h2>Histórico de Frases (Pronto para uso)</h2>
         <div id="historyContainer" class="history-list">
-          <div class="history-item" style="color: #888; cursor: default;">As frases faladas aparecerão aqui. Clique nelas para mandar ao avatar.</div>
+          <div class="history-item" style="color: #888; cursor: default;">As frases faladas aparecerão aqui automaticamente.</div>
         </div>
       </section>
     </section>
   </main>
-
-  <!-- Componente Nativo do VLibras -->
-  <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
-    </div>
-  </div>
-
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
 
   <script>
     (function () {
@@ -146,16 +138,9 @@
         item.className = 'history-item';
         item.textContent = cleanText;
         
-        // Ao clicar no histórico, joga o texto na caixa principal e tenta disparar o tradutor do VLibras
+        // Copia o texto de volta para a caixa principal ao clicar no histórico
         item.onclick = () => {
           transcriptText.value = cleanText;
-          try {
-            if (window.plugin && window.plugin.player) {
-              window.plugin.player.translate(cleanText);
-            } else if (window.vlibrasWidget && window.vlibrasWidget.player) {
-              window.vlibrasWidget.player.translate(cleanText);
-            }
-          } catch (e) {}
         };
 
         historyContainer.prepend(item);
@@ -175,25 +160,20 @@
           statusBox.className = 'status-box status-on';
         };
 
-        rec.onresult = (event) => {
-          let fullText = '';
-          for (let i = 0; i < event.results.length; i++) {
-            fullText += event.results[i][0].transcript + ' ';
-          }
-          transcriptText.value = fullText.trim();
-        };
-
-        // Quando você para de falar uma frase inteira, ela vai para o histórico limpa para o clique
+        // Único listener de resultados para evitar conflitos e duplicações
         rec.onresult = (event) => {
           let fullText = '';
           let finalChunk = '';
+
           for (let i = 0; i < event.results.length; i++) {
             fullText += event.results[i][0].transcript + ' ';
             if (event.results[i].isFinal) {
               finalChunk += event.results[i][0].transcript + ' ';
             }
           }
+
           transcriptText.value = fullText.trim();
+
           if (finalChunk.trim()) {
             addToHistory(finalChunk);
           }
