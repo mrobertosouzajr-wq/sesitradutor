@@ -131,15 +131,10 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 </div>
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>
-/*
-  V3 AUTOMÁTICA + RECONEXÃO + ABERTURA AUTOMÁTICA
-  - O VLibras é carregado pela integração oficial.
-  - O player e o widget são abertos e acionados automaticamente via código e vinculados também ao clique de início de fala.
-*/
 let vlibrasReady=false;
 let vlibrasTimer=null;
 let vlibrasAttempts=0;
-const VLIBRAS_MAX_ATTEMPTS=40;   // ~20s de tentativas por ciclo
+const VLIBRAS_MAX_ATTEMPTS=40;
 const VLIBRAS_POLL_MS=500;
 
 const vStatusEl=document.getElementById("vlibrasStatus");
@@ -171,48 +166,28 @@ function startVlibrasWatch(){
     if(detectVLibras() || vlibrasAttempts>=VLIBRAS_MAX_ATTEMPTS){
       clearInterval(vlibrasTimer);
       if(!vlibrasReady){
-        setVlibrasStatus("O servidor do VLibras não respondeu a tempo (isso costuma ser instabilidade temporária do serviço público, não um erro nesta página). A transcrição continua funcionando normalmente.","error");
+        setVlibrasStatus("O servidor do VLibras não respondeu a tempo (isso costuma ser instabilidade temporária do serviço público). A transcrição continua funcionando normalmente.","error");
         retryBtn.style.display="inline-block";
       }
     }
   },VLIBRAS_POLL_MS);
 }
 
-function forceOpenVLibras(){
-  try{
-    if(window.plugin && typeof window.plugin.open === 'function'){
-      window.plugin.open();
-    }
-    const btn = document.querySelector("[vw-access-button]") || 
-                document.querySelector(".access-button") || 
-                document.querySelector(".vw-access-button");
-    if(btn) btn.click();
-  }catch(e){
-    console.log("Aguardando carregamento do VLibras...");
-  }
-}
-
 window.addEventListener("load",function(){
   try{
-    new window.VLibras.Widget({
-      rootPath: "https://vlibras.gov.br/app",
-      personalization: "https://vlibras.gov.br/config"
-    });
+    // Restaurando a inicialização oficial e padrão sem passar parâmetros quebrados
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
   }catch(e){
     setVlibrasStatus("Não foi possível iniciar o VLibras. Verifique a conexão com a internet.","error");
     retryBtn.style.display="inline-block";
     return;
   }
-  setTimeout(forceOpenVLibras, 500);
-  setTimeout(forceOpenVLibras, 1200);
-  setTimeout(forceOpenVLibras, 2500);
   startVlibrasWatch();
 });
 
 retryBtn.onclick=function(){
   vlibrasReady=false;
   setVlibrasStatus("Tentando reconectar ao VLibras...","warn");
-  forceOpenVLibras();
   startVlibrasWatch();
 };
 </script>
@@ -228,7 +203,7 @@ const liveBadge=document.getElementById("livebadge"), liveBadgeText=document.get
 
 let recognition=null, running=false, finalBuffer="", sentenceTimer=null, order=0;
 const queue=[];
-let sending=false; // garante que as frases são enviadas ao VLibras uma de cada vez, na ordem
+let sending=false;
 
 function setLive(on,label){
   liveBadge.classList.toggle("on",on);
@@ -256,8 +231,6 @@ function setQueueState(item,text,cls){
   item.status.className="badge "+cls;
 }
 
-// Processa a fila em ordem, uma frase por vez, esperando o VLibras
-// terminar de "falar" a frase anterior antes de mandar a próxima.
 async function processQueue(){
   if(sending) return;
   sending=true;
@@ -276,11 +249,8 @@ function sendToVLibras(item){
     if(!auto.checked){ setQueueState(item,"Apenas transcrito","ok"); resolve(); return; }
     if(!detectVLibras()){ setQueueState(item,"VLibras não pronto","err"); resolve(); return; }
     try{
-      // Método utilizado pelo player do VLibras para receber texto.
       window.plugin.player.translate(item.text);
       setQueueState(item,"Enviado ao VLibras","ok");
-      // Pequeno intervalo para não atropelar frase sobre frase, já que
-      // o player não avisa quando termina a animação da frase anterior.
       const words=item.text.split(/\s+/).filter(Boolean).length;
       const waitMs=Math.min(6000,Math.max(1500,words*350));
       setTimeout(resolve,waitMs);
@@ -358,7 +328,7 @@ function buildRecognition(){
         try{recognition=buildRecognition();recognition.start();}catch(e){}
       },250);
     }else{
-      startBtn.disabled=false;stopBtn.disabled=true;
+      startBtn.disabled=false;stopBtn.true;
       status("Microfone parado.","warn");
       setLive(false,"Parado");
     }
@@ -368,10 +338,14 @@ function buildRecognition(){
 
 startBtn.onclick=()=>{
   if(!Recognition)return;
-  forceOpenVLibras();
   running=true;finalBuffer="";
   recognition=buildRecognition();
-  try{recognition.start();}catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
+  try{
+    recognition.start();
+    // Tenta simular clique humano apenas APÓS o clique real do botão
+    const accessBtn = document.querySelector('[vw-access-button]');
+    if(accessBtn) accessBtn.click();
+  }catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
 };
 stopBtn.onclick=()=>{
   running=false;clearTimeout(sentenceTimer);
