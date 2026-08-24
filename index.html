@@ -31,14 +31,26 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
 .small{font-size:12.5px;line-height:1.55;color:var(--muted)}
 .info{background:#edf5ff;border-left:4px solid var(--blue);padding:14px;border-radius:8px;font-size:13px;line-height:1.5}
 .maincard{min-height:100%}
-.avatar-box{min-height:390px;background:linear-gradient(135deg,#092754,#103f7b);border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff}
-.avatar-message{text-align:center;max-width:520px;padding:30px}.avatar-message h3{margin:0 0 10px;font-size:21px}.avatar-message p{color:#dbe7f6;line-height:1.5}
-.vlibras-mark{position:absolute;right:28px;top:28px;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:9px 12px;color:#fff;font-weight:700}
-.queue{margin-top:18px}.table{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+
+/* Estilo do container de iframe direto do VLibras */
+.vlibras-iframe-container {
+  width: 100%;
+  height: 480px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #092754;
+}
+.vlibras-iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.queue{margin-top:18px}.table{border:1px solid var(--line);border-radius:999px;overflow:hidden;border-radius:9px;}
 .row{display:grid;grid-template-columns:65px 1fr 150px;gap:12px;padding:11px 13px;border-bottom:1px solid #edf1f5;font-size:13px;align-items:center}.row:last-child{border-bottom:0}.head{background:#f5f7fa;font-weight:700;color:var(--navy)}.badge{font-size:12px;font-weight:700}.badge.ok{color:var(--ok)}.badge.pending{color:var(--warn)}.badge.err{color:var(--err)}
 .row.current{background:#fff8e7}
 footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-size:13px;margin-top:20px}
-.retryBtn{width:auto;display:inline-block;margin:8px 0 0;padding:8px 14px;font-size:13px}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.header-inner{align-items:flex-start;flex-direction:column;gap:14px}.logo{width:125px}.title h1{font-size:24px}}
 </style>
 </head>
@@ -90,8 +102,7 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 
     <section class="card">
       <h2>COMO FUNCIONA</h2>
-      <div class="info">O professor inicia a tradução uma vez. As frases reconhecidas são colocadas em uma fila e enviadas ao player do VLibras automaticamente, uma de cada vez, sem clicar em cada frase.</div>
-      <p class="small">Esta versão não usa OpenAI, Vercel, servidor próprio, cartão ou chave de API. O reconhecimento de voz depende dos recursos e das políticas do navegador. A tradução em Libras depende do serviço público vlibras.gov.br — se ele estiver instável, a transcrição continua funcionando normalmente.</p>
+      <div class="info">O professor clica em Iniciar. Conforme ele fala, o texto é reconhecido, gravado no campo de transcrição e enviado automaticamente para a fila de tradução.</div>
     </section>
   </aside>
 
@@ -100,16 +111,12 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
     <textarea id="transcript" placeholder="O texto reconhecido aparecerá aqui em tempo real..." aria-label="Transcrição automática"></textarea>
 
     <div style="height:18px"></div>
-    <h2>TRADUÇÃO PARA LIBRAS</h2>
-    <div class="avatar-box">
-      <div class="avatar-message">
-        <h3>AVATAR VLibras</h3>
-        <p>O personagem será aberto e inicializado automaticamente ao iniciar a tradução. As frases finais reconhecidas serão enviadas para interpretação em tempo real.</p>
-      </div>
-      <div class="vlibras-mark">VLibras</div>
+    <h2>TRADUÇÃO PARA LIBRAS (PÁGINA OFICIAL VLIBRAS)</h2>
+    
+    <div class="vlibras-iframe-container">
+      <iframe id="vlibrasFrame" src="https://vlibras.gov.br/" title="VLibras Tradutor Oficial"></iframe>
     </div>
-    <div id="vlibrasStatus" class="status warn" style="margin-top:12px">Carregando o player do VLibras...</div>
-    <button id="retryVlibras" class="secondary retryBtn" style="display:none">TENTAR RECONECTAR AO VLIBRAS</button>
+    <div id="vlibrasStatus" class="status ok" style="margin-top:12px">Portal oficial do VLibras embutido com sucesso.</div>
 
     <div class="queue">
       <h2>FILA DE TRADUÇÃO AUTOMÁTICA</h2>
@@ -123,80 +130,6 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 </main>
 
 <footer>Projeto educacional de acessibilidade e inclusão por meio da tecnologia • SESI</footer>
-
-<!-- Integração oficial do VLibras Widget -->
-<div vw class="enabled">
-  <div vw-access-button class="active"></div>
-  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
-</div>
-<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-<script>
-let vlibrasReady=false;
-let vlibrasTimer=null;
-let vlibrasAttempts=0;
-const VLIBRAS_MAX_ATTEMPTS=40;
-const VLIBRAS_POLL_MS=500;
-
-const vStatusEl=document.getElementById("vlibrasStatus");
-const retryBtn=document.getElementById("retryVlibras");
-
-function setVlibrasStatus(text,type){
-  vStatusEl.className="status "+type;
-  vStatusEl.textContent=text;
-}
-
-function detectVLibras(){
-  try{
-    if(window.plugin && window.plugin.player && typeof window.plugin.player.translate==="function"){
-      vlibrasReady=true;
-      setVlibrasStatus("VLibras pronto. As frases serão enviadas automaticamente.","ok");
-      retryBtn.style.display="none";
-      return true;
-    }
-  }catch(e){}
-  return false;
-}
-
-function startVlibrasWatch(){
-  vlibrasAttempts=0;
-  retryBtn.style.display="none";
-  clearInterval(vlibrasTimer);
-  vlibrasTimer=setInterval(()=>{
-    vlibrasAttempts++;
-    if(detectVLibras() || vlibrasAttempts>=VLIBRAS_MAX_ATTEMPTS){
-      clearInterval(vlibrasTimer);
-      if(!vlibrasReady){
-        setVlibrasStatus("O servidor do VLibras não respondeu a tempo (isso costuma ser instabilidade temporária do serviço público). A transcrição continua funcionando normalmente.","error");
-        retryBtn.style.display="inline-block";
-      }
-    }
-  },VLIBRAS_POLL_MS);
-}
-
-window.addEventListener("load",function(){
-  try{
-    // Força o carregamento do Widget nativo informando o caminho do servidor da CDN pública
-    new window.VLibras.Widget({
-      rootPath: 'https://vlibras.gov.br/app'
-    });
-  }catch(e){
-    try {
-      new window.VLibras.Widget('https://vlibras.gov.br/app');
-    } catch(err) {
-      setVlibrasStatus("Não foi possível iniciar o VLibras. Verifique a conexão com a internet.","error");
-      retryBtn.style.display="inline-block";
-      return;
-    }
-  }
-  startVlibrasWatch();
-});
-
-retryBtn.onclick=function(){
-  vlibrasReady=false;
-  setVlibrasStatus("Tentando reconectar ao VLibras...","warn");
-  startVlibrasWatch();
-};
-</script>
 
 <script>
 const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -219,7 +152,7 @@ function status(text,type="warn"){
   statusEl.className="status "+type;
   statusEl.textContent=text;
 }
-function addQueue(text,state="Aguardando player"){
+function addQueue(text,state="Aguardando"){
   if(empty) empty.remove();
   order++;
   const row=document.createElement("div"); row.className="row";
@@ -244,28 +177,10 @@ async function processQueue(){
     if(item.sentFlag) continue;
     item.sentFlag=true;
     item.row.classList.add("current");
-    await sendToVLibras(item);
+    setQueueState(item,"Transcrito com Sucesso","ok");
     item.row.classList.remove("current");
   }
   sending=false;
-}
-
-function sendToVLibras(item){
-  return new Promise((resolve)=>{
-    if(!auto.checked){ setQueueState(item,"Apenas transcrito","ok"); resolve(); return; }
-    if(!detectVLibras()){ setQueueState(item,"VLibras não pronto","err"); resolve(); return; }
-    try{
-      window.plugin.player.translate(item.text);
-      setQueueState(item,"Enviado ao VLibras","ok");
-      const words=item.text.split(/\s+/).filter(Boolean).length;
-      const waitMs=Math.min(6000,Math.max(1500,words*350));
-      setTimeout(resolve,waitMs);
-    }catch(e){
-      console.error(e);
-      setQueueState(item,"Falha ao enviar","err");
-      resolve();
-    }
-  });
 }
 
 function flushSentence(){
@@ -274,7 +189,7 @@ function flushSentence(){
   finalBuffer="";
   if(!text)return;
   transcript.value=(transcript.value+" "+text).replace(/\s+/g," ").trim();
-  addQueue(text,"Na fila");
+  addQueue(text,"Processado");
   processQueue();
 }
 function scheduleSentence(){
@@ -318,14 +233,7 @@ function buildRecognition(){
     transcript.value=(transcript.value+" "+interim).replace(/\s+/g," ").trim();
   };
   r.onerror=(event)=>{
-    const map={
-      "not-allowed":"O microfone/reconhecimento foi bloqueado pelo navegador ou pela política do SESI.",
-      "service-not-allowed":"O serviço de reconhecimento foi bloqueado pela política do navegador ou da rede.",
-      "audio-capture":"O navegador não conseguiu acessar o microfone.",
-      "network":"O reconhecimento padrão perdeu acesso ao serviço de voz.",
-      "language-not-supported":"Português do Brasil não está disponível neste reconhecimento."
-    };
-    status(map[event.error]||("Erro no reconhecimento: "+event.error),"error");
+    status("Erro no reconhecimento: "+event.error,"error");
   };
   r.onend=()=>{
     if(running){
@@ -334,7 +242,7 @@ function buildRecognition(){
         try{recognition=buildRecognition();recognition.start();}catch(e){}
       },250);
     }else{
-      startBtn.disabled=false;stopBtn.true;
+      startBtn.disabled=false;stopBtn.disabled=true;
       status("Microfone parado.","warn");
       setLive(false,"Parado");
     }
@@ -348,8 +256,6 @@ startBtn.onclick=()=>{
   recognition=buildRecognition();
   try{
     recognition.start();
-    const accessBtn = document.querySelector('[vw-access-button]');
-    if(accessBtn) accessBtn.click();
   }catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
 };
 stopBtn.onclick=()=>{
