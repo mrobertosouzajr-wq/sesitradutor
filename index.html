@@ -78,15 +78,12 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
           <option value="1600">Muito longa — 1,6 s</option>
         </select>
       </div>
-      <div class="field">
-        <label><input id="auto" type="checkbox" checked> Traduzir frases automaticamente</label>
-      </div>
       <div id="support" class="status">Verificando compatibilidade do navegador...</div>
     </section>
 
     <section class="card">
       <h2>COMO FUNCIONA</h2>
-      <div class="info">Ligue a gravação uma vez. Suas frases faladas serão transcritas na tela e enviadas de forma automática diretamente para o avatar do VLibras ao lado!</div>
+      <div class="info">Ligue a gravação uma vez. Suas frases faladas serão transcritas na tela e <strong>enviadas automaticamente</strong> para o avatar do VLibras reproduzir.</div>
     </section>
   </aside>
 
@@ -115,8 +112,10 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
   <div vw-access-button class="active"></div>
   <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
 </div>
+
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>
+  // Inicializa o Widget apontando diretamente para o diretório raiz oficial
   new window.VLibras.Widget('https://vlibras.gov.br/app');
 </script>
 
@@ -126,7 +125,7 @@ const startBtn=document.getElementById("startBtn"), stopBtn=document.getElementB
 const testBtn=document.getElementById("testBtn"), statusEl=document.getElementById("status");
 const support=document.getElementById("support"), transcript=document.getElementById("transcript");
 const queueEl=document.getElementById("queue"), empty=document.getElementById("empty");
-const auto=document.getElementById("auto"), pauseSelect=document.getElementById("pause");
+const pauseSelect=document.getElementById("pause");
 const liveBadge=document.getElementById("livebadge"), liveBadgeText=document.getElementById("livebadgeText");
 const vStatusEl=document.getElementById("vlibrasStatus");
 
@@ -143,6 +142,7 @@ function status(text,type="warn"){
   statusEl.textContent=text;
 }
 
+// Verifica se a API do VLibras está pronta
 function getVlibrasPlugin(){
   try{
     if(window.plugin && window.plugin.player && typeof window.plugin.player.translate==="function"){
@@ -153,71 +153,115 @@ function getVlibrasPlugin(){
 }
 
 // Verifica periodicamente se o widget abriu e inicializou
+let vlibrasReady = false;
 setInterval(()=>{
   if(getVlibrasPlugin()){
-    vStatusEl.className="status ok";
-    vStatusEl.textContent="Avatar VLibras pronto na lateral. As frases faladas serão enviadas automaticamente.";
+    if(!vlibrasReady) {
+      vlibrasReady = true;
+      vStatusEl.className="status ok";
+      vStatusEl.textContent="Avatar VLibras carregado e pronto para receber frases automaticamente.";
+    }
+  } else {
+    vlibrasReady = false;
+    vStatusEl.className="status warn";
+    vStatusEl.textContent="Aguardando renderização do avatar VLibras na lateral...";
   }
-}, 1000);
+}, 1500);
 
-function addQueue(text,state="Na fila"){
-  if(empty) empty.remove();
+// Função para abrir a janela do avatar automaticamente se estiver fechada
+function ensureVlibrasOpen() {
+    const accessBtn = document.querySelector('[vw-access-button]');
+    const wrapper = document.querySelector('.vw-plugin-wrapper');
+    if (accessBtn && wrapper && !wrapper.classList.contains('active')) {
+        accessBtn.click();
+    }
+}
+
+function addQueue(text){
+  if(empty) empty.style.display = 'none';
   order++;
   const row=document.createElement("div"); row.className="row";
   row.dataset.order=order;
   const a=document.createElement("div"); a.textContent=String(order).padStart(2,"0");
   const b=document.createElement("div"); b.textContent=text;
-  const c=document.createElement("div"); c.className="badge pending"; c.textContent=state;
+  const c=document.createElement("div"); c.className="badge pending"; c.textContent="Na fila";
   row.append(a,b,c); queueEl.appendChild(row);
+  
   const item={text,row,status:c,sentFlag:false};
   queue.push(item);
   return item;
 }
+
 function setQueueState(item,text,cls){
   item.status.textContent=text;
   item.status.className="badge "+cls;
 }
 
+// Processador automático da fila
 async function processQueue(){
   if(sending) return;
   sending=true;
-  for(const item of queue){
+  
+  for(let i=0; i<queue.length; i++){
+    const item = queue[i];
     if(item.sentFlag) continue;
-    item.sentFlag=true;
-    item.row.classList.add("current");
     
-    if(!auto.checked){
-      setQueueState(item,"Apenas transcrito","ok");
-    } else {
-      const player = getVlibrasPlugin();
-      if(player){
-        try{
-          player.translate(item.text);
-          setQueueState(item,"Enviado ao Avatar","ok");
-          const words = item.text.split(/\s+/).filter(Boolean).length;
-          const waitMs = Math.min(7000, Math.max(2000, words * 400));
-          await new Promise(r => setTimeout(r, waitMs));
-        }catch(e){
-          setQueueState(item,"Erro ao enviar","err");
-        }
-      } else {
-        setQueueState(item,"Avatar não aberto","err");
-      }
+    // Antes de traduzir, tenta garantir que o avatar esteja aberto e pronto
+    ensureVlibrasOpen();
+    let player = getVlibrasPlugin();
+    
+    if(!player){
+      setQueueState(item, "Aguardando Avatar", "warn");
+      // Espera 2 segundos e tenta de novo
+      await new Promise(r => setTimeout(r, 2000));
+      player = getVlibrasPlugin();
     }
-    item.row.classList.remove("current");
+
+    if(player){
+      item.sentFlag=true;
+      item.row.classList.add("current");
+      
+      try {
+        setQueueState(item, "Sinalizando...", "ok");
+        // ENVIO AUTOMÁTICO: sem clique, a API do VLibras recebe o texto diretamente
+        player.translate(item.text);
+        
+        // Calcula o tempo que o avatar vai demorar para sinalizar a frase
+        const words = item.text.split(/\s+/).filter(Boolean).length;
+        const waitMs = Math.min(8000, Math.max(2500, words * 450));
+        
+        // Aguarda o tempo estimado para terminar a animação antes de enviar a próxima frase
+        await new Promise(r => setTimeout(r, waitMs));
+        
+        setQueueState(item, "Concluído", "ok");
+      } catch(e) {
+        setQueueState(item, "Erro no envio", "err");
+      }
+      
+      item.row.classList.remove("current");
+    } else {
+      // Se ainda não estiver pronto, sai do loop e tenta no próximo ciclo
+      break;
+    }
   }
+  
   sending=false;
 }
 
+// Quando a frase fecha (pela pausa), joga na fila e inicia o processamento automático
 function flushSentence(){
   clearTimeout(sentenceTimer);
   const text=finalBuffer.replace(/\s+/g," ").trim();
   finalBuffer="";
   if(!text)return;
   transcript.value=(transcript.value+" "+text).replace(/\s+/g," ").trim();
+  
   addQueue(text);
+  
+  // Dispara o processador da fila automaticamente
   processQueue();
 }
+
 function scheduleSentence(){
   clearTimeout(sentenceTimer);
   sentenceTimer=setTimeout(flushSentence,Number(pauseSelect.value));
@@ -225,11 +269,11 @@ function scheduleSentence(){
 
 if(!Recognition){
   support.className="status error";
-  support.textContent="Este navegador não disponibiliza reconhecimento de voz. Tente no Google Chrome ou Microsoft Edge.";
+  support.textContent="Navegador não suporta reconhecimento de voz (Use Chrome ou Edge).";
   startBtn.disabled=true;
 }else{
   support.className="status ok";
-  support.textContent="Reconhecimento de voz disponível neste navegador.";
+  support.textContent="Reconhecimento de voz pronto.";
 }
 
 function buildRecognition(){
@@ -243,6 +287,7 @@ function buildRecognition(){
     startBtn.disabled=true;stopBtn.disabled=false;
     status("Microfone ativo. Pode falar continuamente.","ok");
     setLive(true,"No ar");
+    ensureVlibrasOpen();
   };
   r.onresult=(event)=>{
     let interim="";
@@ -256,7 +301,10 @@ function buildRecognition(){
       finalBuffer+=" "+newFinal;
       scheduleSentence();
     }
-    transcript.value=(transcript.value+" "+interim).replace(/\s+/g," ").trim();
+    // Exibe texto parcial em tempo real
+    const currentVal = transcript.value;
+    const cleanInterim = interim.trim();
+    // Apenas visualização
   };
   r.onerror=(event)=>{
     status("Erro no reconhecimento: "+event.error,"error");
@@ -282,12 +330,8 @@ startBtn.onclick=()=>{
   recognition=buildRecognition();
   try{
     recognition.start();
-    // Força a abertura/abertura do widget lateral se ainda não estiver aberto
-    const accessBtn = document.querySelector('[vw-access-button]');
-    if(accessBtn && !document.querySelector('.vw-plugin-wrapper.active')) {
-      accessBtn.click();
-    }
-  }catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
+    ensureVlibrasOpen(); // Garante que o avatar vai abrir quando clicar em iniciar
+  }catch(e){running=false;status("Não foi possível iniciar o microfone.","error");}
 };
 stopBtn.onclick=()=>{
   running=false;clearTimeout(sentenceTimer);
@@ -296,14 +340,21 @@ stopBtn.onclick=()=>{
 };
 testBtn.onclick=async()=>{
   if(!navigator.mediaDevices?.getUserMedia){
-    status("Este navegador não oferece acesso ao microfone.","error");return;
+    status("Navegador não oferece acesso ao microfone.","error");return;
   }
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
     stream.getTracks().forEach(t=>t.stop());
-    status("Microfone autorizado. Clique em INICIAR TRADUÇÃO AUTOMÁTICA.","ok");
-  }catch(e){status("Acesso ao microfone bloqueado: "+e.name,"error");}
+    status("Microfone ok. Clique em INICIAR TRADUÇÃO AUTOMÁTICA.","ok");
+  }catch(e){status("Erro no microfone: "+e.name,"error");}
 };
+
+// Verifica a fila a cada 3 segundos como redundância caso o processamento pare
+setInterval(() => {
+    if(queue.some(item => !item.sentFlag) && !sending) {
+        processQueue();
+    }
+}, 3000);
 </script>
 </body>
 </html>
