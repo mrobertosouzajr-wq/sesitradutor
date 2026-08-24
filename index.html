@@ -19,11 +19,11 @@ header{background:var(--navy);border-bottom:4px solid var(--red);color:#fff;padd
 main{max-width:1250px;margin:22px auto;padding:0 16px}.layout{display:grid;grid-template-columns:340px 1fr;gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 14px rgba(10,30,60,.05);margin-bottom:18px}
 .card h2{font-size:19px;margin:0 0 16px;color:var(--navy)}
-button{width:100%;border:0;border-radius:99px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;margin:0 0 10px;transition:transform .05s ease}
+button{width:100%;border:0;border-radius:999px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;margin:0 0 10px;transition:transform .05s ease}
 button:active{transform:scale(.98)}
 .primary{background:var(--navy);color:#fff}.primary:hover{background:var(--navy2)}.secondary{background:#eef2f7;color:var(--text)}.danger{background:#fff;color:var(--err);border:1px solid #efcaca}
 button:disabled{opacity:.48;cursor:not-allowed;transform:none}
-.status{padding:12px;border:1px solid var(--line);border-radius:9px;background:#f7f9fc;color:var(--muted);font-size:14px;line-height:1.4}
+.status{padding:12px;border:1px solid var(--line);border-radius:999px;background:#f7f9fc;color:var(--muted);font-size:14px;line-height:1.4}
 .status.ok{background:#edf8f1;color:var(--ok);border-color:#cbe9d5}.status.warn{background:#fff8e7;color:var(--warn);border-color:#eedba5}.status.error{background:#fff0f0;color:var(--err);border-color:#efcaca}
 label{font-size:14px;font-weight:700;display:block;margin-bottom:8px}.field{margin-bottom:16px}
 select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--text);font:inherit}
@@ -175,12 +175,18 @@ function startVlibrasWatch(){
 
 window.addEventListener("load",function(){
   try{
-    // Restaurando a inicialização oficial e padrão sem passar parâmetros quebrados
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
+    // Força o carregamento do Widget nativo informando o caminho do servidor da CDN pública
+    new window.VLibras.Widget({
+      rootPath: 'https://vlibras.gov.br/app'
+    });
   }catch(e){
-    setVlibrasStatus("Não foi possível iniciar o VLibras. Verifique a conexão com a internet.","error");
-    retryBtn.style.display="inline-block";
-    return;
+    try {
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    } catch(err) {
+      setVlibrasStatus("Não foi possível iniciar o VLibras. Verifique a conexão com a internet.","error");
+      retryBtn.style.display="inline-block";
+      return;
+    }
   }
   startVlibrasWatch();
 });
@@ -342,7 +348,6 @@ startBtn.onclick=()=>{
   recognition=buildRecognition();
   try{
     recognition.start();
-    // Tenta simular clique humano apenas APÓS o clique real do botão
     const accessBtn = document.querySelector('[vw-access-button]');
     if(accessBtn) accessBtn.click();
   }catch(e){running=false;status("Não foi possível iniciar o reconhecimento.","error");}
