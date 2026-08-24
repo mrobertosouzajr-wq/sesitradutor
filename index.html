@@ -110,13 +110,15 @@ footer{background:var(--navy);color:#dce6f5;text-align:center;padding:18px;font-
 <!-- Widget Oficial do VLibras na Lateral -->
 <div vw class="enabled">
   <div vw-access-button class="active"></div>
-  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
 </div>
 
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>
-  // Inicializa o Widget apontando diretamente para o diretório raiz oficial
-  new window.VLibras.Widget('https://vlibras.gov.br/app');
+  // Chame sem parâmetros na v7.5.0 para evitar erro de concatenação de rotas WebGL
+  new window.VLibras.Widget();
 </script>
 
 <script>
